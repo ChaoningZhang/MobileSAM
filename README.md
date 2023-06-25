@@ -53,14 +53,6 @@ mask_generator = SamAutomaticMaskGenerator(sam)
 masks = mask_generator.generate(<your_image>)
 ```
 
-Additionally, masks can be generated for images from the command line:
-
-```
-python scripts/amg.py --checkpoint <path/to/checkpoint> --model-type <model_type> --input <image_or_folder> --output <path/to/output>
-```
-
-See the examples notebooks on [using SAM with prompts](/notebooks/predictor_example.ipynb) and [automatically generating masks](/notebooks/automatic_mask_generator_example.ipynb) for more details.
-
 <p float="left">
   <img src="assets/notebook1.png?raw=true" width="49.1%" />
   <img src="assets/notebook2.png?raw=true" width="48.9%" />
