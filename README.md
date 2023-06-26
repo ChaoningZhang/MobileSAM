@@ -1,8 +1,8 @@
-# Mobile Segment Anything
+# Faster Segment Anything (MobileSAM)
 
 ![SAM design](assets/model_diagram.jpg?raw=true)
 
-The **Mobile Segment Anything Model (MobileSAM)** only trained 11k datasets and achieves comparable performance as the original paper [[`Paper`](https://ai.facebook.com/research/publications/segment-anything/)]. MobileSAM can also achieve high quality object masks from input prompts such as points or boxes, and it can be used to generate masks for all objects in an image.
+**MobileSAM** is only trained on 100k datasets and achieves comparable performance as the original paper [[`Paper`](https://ai.facebook.com/research/publications/segment-anything/)]. MobileSAM can also achieve high quality object masks from input prompts such as points or boxes, and it can be used to generate masks for all objects in an image.
 
 <p float="left">
   <img src="assets/mask1.png?raw=true" width="49.1%" />
