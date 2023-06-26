@@ -2,7 +2,11 @@
 
 ![SAM design](assets/model_diagram.jpg?raw=true)
 
-**MobileSAM** is only trained on 100k datasets and achieves comparable performance as the original paper [[`Paper`](https://ai.facebook.com/research/publications/segment-anything/)]. MobileSAM can also achieve high quality object masks from input prompts such as points or boxes, and it can be used to generate masks for all objects in an image.
+**MobileSAM** keeps exactly the same pipeline as the original SAM, but replaces the original heavyweight encoder (632M) with a much smaller Tiny-ViT (5M). It performs on par with the original SAM. For inference speed, MobileSAM runs around 10ms per image: 8ms on the image encoder and 2ms on the mask decoder. It is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
+
+**How to Adapt from SAM to MobileSAM?** Since MobileSAM keeps exactly the same pipeline as the original SAM, we inherit pre-processing, post-processing, and all other interfaces from the original SAM. The users who use the original SAM can adapt to MobileSAM with zero effort, by assuing everything is exactly the same except for a smaller image encoder in the SAM. The only problem you might encounter is to load our pretrained model weights.
+
+**How is MobileSAM trained?** MobileSAM is trained on a single GPU with 100k datasets (1% of the original images) for less than a day. The training code will be available soon.
 
 <p float="left">
   <img src="assets/mask1.png?raw=true" width="49.1%" />
