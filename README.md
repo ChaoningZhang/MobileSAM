@@ -2,7 +2,9 @@
 
 ![SAM design](assets/model_diagram.jpg?raw=true)
 
-**MobileSAM** keeps exactly the same pipeline as the original SAM, but replaces the original heavyweight encoder (632M) with a much smaller Tiny-ViT (5M). It performs on par with the original SAM. For inference speed, MobileSAM runs around 10ms per image: 8ms on the image encoder and 2ms on the mask decoder. It is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
+**MobileSAM** keeps exactly the same pipeline as the original SAM, but replaces the original heavyweight encoder (632M) with a much smaller Tiny-ViT (5M). It performs on par with the original SAM. For inference speed, MobileSAM runs around 10ms per image: 8ms on the image encoder and 2ms on the mask decoder. 
+
+**Is MobileSAM better than FastSAM? To our best knowldege, yes!** MobileSAM is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
 
 **How to Adapt from SAM to MobileSAM?** Since MobileSAM keeps exactly the same pipeline as the original SAM, we inherit pre-processing, post-processing, and all other interfaces from the original SAM. The users who use the original SAM can adapt to MobileSAM with zero effort, by assuing everything is exactly the same except for a smaller image encoder in the SAM.
 
