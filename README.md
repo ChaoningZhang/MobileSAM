@@ -63,8 +63,7 @@ mIoU                                     | FastSAM | MobileSAM
 **How is MobileSAM trained?** MobileSAM is trained on a single GPU with 100k datasets (1% of the original images) for less than a day. The training code will be available soon.
 
 <p float="left">
-  <img src="assets/mask1.png?raw=true" width="49.1%" />
-  <img src="assets/mask2.jpg?raw=true" width="49.1%" /> 
+  <img src="assets/mask_comparision.jpg?raw=true" width="99.1%" />
 </p>
 
 ## Installation
