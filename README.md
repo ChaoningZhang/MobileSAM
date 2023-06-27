@@ -121,7 +121,7 @@ masks = mask_generator.generate(<your_image>)
   <img src="assets/notebook2.png?raw=true" width="48.9%" />
 </p>
 
-## Citing our MobileSAM
+## BibTex of our MobileSAM
 If you use MobileSAM in your research, please use the following BibTeX entry. :mega: Thank you!
 
 ```bibtex
