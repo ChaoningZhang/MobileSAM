@@ -80,7 +80,6 @@ If you use MobileSAM in your research, please use the following BibTeX entry.
   journal={arXiv:2304.02643},
   year={2023}
 }
-}
 ```
 2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT).   
 
