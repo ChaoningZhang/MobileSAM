@@ -32,7 +32,7 @@ Speed      |  456ms  | 12ms
   <img src="assets/mask_point.jpg?raw=true" width="99.1%" />
 </p>
 
-**Original SAM and MobileSAM under a box as the prompt.** 
+**Original SAM and MobileSAM with a box as the prompt.** 
 <p float="left">
   <img src="assets/mask_box.jpg?raw=true" width="99.1%" />
 </p>
