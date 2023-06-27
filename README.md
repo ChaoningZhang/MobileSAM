@@ -68,3 +68,7 @@ masks = mask_generator.generate(<your_image>)
 
 If you use MobileSAM in your research, please use the following BibTeX entry.
 
+## Acknowledgement
+
+1. The code of MobileSAM project is heavily dependent on the original Segment Anything Project.
+2. We also provide acknowledgement to TinyViT project https://github.com/microsoft/Cream/tree/main/TinyViT 
