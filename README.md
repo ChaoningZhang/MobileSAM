@@ -60,7 +60,7 @@ masks = mask_generator.generate(<your_image>)
 </p>
 
 ## Citing our MobileSAM
-If you use MobileSAM in your research, please use the following BibTeX entry.
+If you use MobileSAM in your research, please use the following BibTeX entry. :mega: Thank you!
 
 ```bibtex
 @article{zhang2023faster,
