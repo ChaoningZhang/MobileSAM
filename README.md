@@ -59,23 +59,34 @@ cd MobileSAM; pip install -e .
 
 
 ## <a name="GettingStarted"></a>Getting Started
-
-First download a [model checkpoint](#model-checkpoints). Then the model can be used in just a few lines to get masks from a given prompt:
+The MobileSAM can be loaded in the following ways:
 
 ```
-from segment_anything import SamPredictor, sam_model_registry
+from mobile_encoder.setup_mobile_sam import setup_model
+checkpoint = torch.load('../weights/mobile_sam.pt')
+mobile_sam = setup_model()
+mobile_sam.load_state_dict(checkpoint,strict=True)
+```
 
-predictor = SamPredictor(sam)
+Then the model can be easily used in just a few lines to get masks from a given prompt:
+
+```
+from segment_anything import SamPredictor
+device = "cuda"
+mobile_sam.to(device=device)
+mobile_sam.eval()
+predictor = SamPredictor(mobile_sam)
 predictor.set_image(<your_image>)
 masks, _, _ = predictor.predict(<input_prompts>)
+
 ```
 
 or generate masks for an entire image:
 
 ```
-from segment_anything import SamAutomaticMaskGenerator, sam_model_registry
+from segment_anything import SamAutomaticMaskGenerator
 
-mask_generator = SamAutomaticMaskGenerator(sam)
+mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
 
