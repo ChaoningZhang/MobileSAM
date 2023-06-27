@@ -4,6 +4,10 @@
 
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
 
+<p float="left">
+  <img src="assets/mask_comparision.jpg?raw=true" width="99.1%" />
+</p>
+
 **MobileSAM** performs on par with the original SAM and keeps exactly the same pipeline as the original SAM except for a change on the image encoder. Specifically, we replace the original heavyweight ViT-H encoder (632M) with a much smaller Tiny-ViT (5M). On a single GPU, MobileSAM runs around 12ms per image: 8ms on the image encoder and 4ms on the mask decoder. 
 
 The comparison of ViT-based image encoder is summarzed as follows: 
@@ -62,9 +66,7 @@ mIoU                                     | FastSAM | MobileSAM
 
 **How is MobileSAM trained?** MobileSAM is trained on a single GPU with 100k datasets (1% of the original images) for less than a day. The training code will be available soon.
 
-<p float="left">
-  <img src="assets/mask_comparision.jpg?raw=true" width="99.1%" />
-</p>
+
 
 ## Installation
 
@@ -115,10 +117,6 @@ mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
 
-<p float="left">
-  <img src="assets/notebook1.png?raw=true" width="49.1%" />
-  <img src="assets/notebook2.png?raw=true" width="48.9%" />
-</p>
 
 ## BibTex of our MobileSAM
 If you use MobileSAM in your research, please use the following BibTeX entry. :mega: Thank you!
