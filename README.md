@@ -24,6 +24,17 @@ Whole Pipeline (Enc+Dec)                                      | Original SAM | M
 Paramters      |  615M   | 9.66M
 Speed      |  456ms  | 12ms
 
+**Original SAM and MobileSAM under with a (single) point as the prompt.**  
+
+<p float="left">
+  <img src="assets/mask_point.jpg?raw=true" width="99.1%" />
+</p>
+
+**Original SAM and MobileSAM under a box as the prompt.** 
+<p float="left">
+  <img src="assets/mask_box.jpg?raw=true" width="99.1%" />
+</p>
+
 **Is MobileSAM faster and smaller than FastSAM? Yes, to our knowledge!** 
 MobileSAM is around 7 times smaller and around 5 times faster than the concurrent FastSAM. 
 The comparison of the whole pipeline is summarzed as follows: 
@@ -42,18 +53,8 @@ mIoU                                     | FastSAM | MobileSAM
 400      |  0.41  |0.73
 500      |  0.41  |0.73
 
-**Our MobileSAM is as versatile as the original SAM** 
-Unlike FastSAM, our MobileSAM is as versatile as the original SAM, like working with a single prompt point.
 
-<p float="left">
-  <img src="assets/mask_point.jpg?raw=true" width="99.1%" />
-</p>
 
-We also show the results with box as the prompt as follows. 
-
-<p float="left">
-  <img src="assets/mask_box.jpg?raw=true" width="99.1%" />
-</p>
 
 **How to Adapt from SAM to MobileSAM?** Since MobileSAM keeps exactly the same pipeline as the original SAM, we inherit pre-processing, post-processing, and all other interfaces from the original SAM. The users who use the original SAM can adapt to MobileSAM with zero effort, by assuing everything is exactly the same except for a smaller image encoder in the SAM.
 
