@@ -7,7 +7,7 @@
 Model                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  632M   | 5M
-Paramters      |  0.452  |0.008
+Speed      |  0.452ms  |0.008ms
 
 **Is MobileSAM better than FastSAM? To our best knowldege, yes!** MobileSAM is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
 
