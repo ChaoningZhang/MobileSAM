@@ -82,11 +82,9 @@ If you use MobileSAM in your research, please use the following BibTeX entry.
 
 2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT).   
 
-@inproceedings{wu2022tinyvit,
-  title={Tinyvit: Fast pretraining distillation for small vision transformers},
+@InProceedings{tiny_vit,
+  title={TinyViT: Fast Pretraining Distillation for Small Vision Transformers},
   author={Wu, Kan and Zhang, Jinnian and Peng, Houwen and Liu, Mengchen and Xiao, Bin and Fu, Jianlong and Yuan, Lu},
-  booktitle={Computer Vision--ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23--27, 2022, Proceedings, Part XXI},
-  pages={68--85},
-  year={2022},
-  organization={Springer}
+  booktitle={European conference on computer vision (ECCV)},
+  year={2022}
 }
