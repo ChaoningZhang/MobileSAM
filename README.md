@@ -78,7 +78,6 @@ mobile_sam.eval()
 predictor = SamPredictor(mobile_sam)
 predictor.set_image(<your_image>)
 masks, _, _ = predictor.predict(<input_prompts>)
-
 ```
 
 or generate masks for an entire image:
