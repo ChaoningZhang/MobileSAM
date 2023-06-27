@@ -71,4 +71,4 @@ If you use MobileSAM in your research, please use the following BibTeX entry.
 ## Acknowledgement
 
 1. The code of MobileSAM project is heavily dependent on the original [Segment Anything](https://github.com/facebookresearch/segment-anything) project.
-2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT)https://github.com/microsoft/Cream/tree/main/TinyViT).   
+2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT).   
