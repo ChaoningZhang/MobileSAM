@@ -25,15 +25,14 @@ class SamOnnxModel(nn.Module):
     def __init__(
         self,
         model: Sam,
-        return_single_mask: bool,
-        use_stability_score: bool = False,
+        use_stability_score: bool = True,
         return_extra_metrics: bool = False,
     ) -> None:
         super().__init__()
         self.mask_decoder = model.mask_decoder
         self.model = model
         self.img_size = model.image_encoder.img_size
-        self.return_single_mask = return_single_mask
+        self.return_single_mask = True
         self.use_stability_score = use_stability_score
         self.stability_score_offset = 1.0
         self.return_extra_metrics = return_extra_metrics
@@ -107,13 +106,19 @@ class SamOnnxModel(nn.Module):
     @torch.no_grad()
     def forward(
         self,
-        image_embeddings: torch.Tensor,
-        point_coords: torch.Tensor,
-        point_labels: torch.Tensor,
-        mask_input: torch.Tensor,
-        has_mask_input: torch.Tensor,
-        orig_im_size: torch.Tensor,
+        x: torch.Tensor,
+        point_coords: torch.Tensor
     ):
+        img = self.model.preprocess(x)
+        image_embeddings = self.model.image_encoder(img)
+
+        orig_im_size = torch.Tensor([x.shape[-2], x.shape[-1]]).float()
+
+        mask_input_size = [4 * x for x in self.model.prompt_encoder.image_embedding_size]
+        mask_input = torch.zeros(1,1,*mask_input_size, dtype=torch.float)#torch.randn(1,1,*mask_input_size, dtype=torch.float)
+
+        has_mask_input = torch.tensor([0], dtype=torch.float)
+        point_labels = torch.ones(1, point_coords.shape[1], dtype=torch.long)
         sparse_embedding = self._embed_points(point_coords, point_labels)
         dense_embedding = self._embed_masks(mask_input, has_mask_input)
 
@@ -141,4 +146,4 @@ class SamOnnxModel(nn.Module):
             areas = (upscaled_masks > self.model.mask_threshold).sum(-1).sum(-1)
             return upscaled_masks, scores, stability_scores, areas, masks
 
-        return upscaled_masks, scores, masks
+        return torch.sigmoid(upscaled_masks), scores, torch.sigmoid(masks)
