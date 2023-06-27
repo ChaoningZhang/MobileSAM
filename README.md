@@ -1,6 +1,6 @@
 # Faster Segment Anything (MobileSAM)
 
-:pushpin: The paper for our MobileSAM project is available at - [Faster Segment Anything: Towards Lightweight SAM for Mobile Applications](https://arxiv.org/pdf/2306.14289.pdf).
+:pushpin: The paper for our MobileSAM project is available at [Faster Segment Anything: Towards Lightweight SAM for Mobile Applications](https://arxiv.org/pdf/2306.14289.pdf).
 
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
 
