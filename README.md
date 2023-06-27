@@ -34,7 +34,7 @@ Whole Pipeline (Enc+Dec)                                      | Original SAM | M
 Paramters      |  615M   | 9.66M
 Speed      |  456ms  | 12ms
 
-**Original SAM and MobileSAM under with a (single) point as the prompt.**  
+**Original SAM and MobileSAM with a (single) point as the prompt.**  
 
 <p float="left">
   <img src="assets/mask_point.jpg?raw=true" width="99.1%" />
