@@ -149,7 +149,7 @@ If you use MobileSAM in your research, please use the following BibTeX entry. :m
 
 <details>
 <summary>
-<a href="https://github.com/ChaoningZhang/MobileSAM">TinyViT</a> (TinyViT: Fast Pretraining Distillation for Small Vision Transformers) [<b>bib</b>]
+<a href="https://github.com/microsoft/Cream/tree/main/TinyViT">TinyViT</a> (TinyViT: Fast Pretraining Distillation for Small Vision Transformers) [<b>bib</b>]
 </summary>
 
 ```bibtex
