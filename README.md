@@ -32,11 +32,6 @@ git clone git@github.com:ChaoningZhang/MobileSAM.git
 cd MobileSAM; pip install -e .
 ```
 
-The following optional dependencies are necessary for mask post-processing, saving masks in COCO format, the example notebooks, and exporting the model in ONNX format. `jupyter` is also required to run the example notebooks.
-
-```
-pip install opencv-python pycocotools matplotlib onnxruntime onnx
-```
 
 ## <a name="GettingStarted"></a>Getting Started
 
@@ -44,7 +39,7 @@ First download a [model checkpoint](#model-checkpoints). Then the model can be u
 
 ```
 from segment_anything import SamPredictor, sam_model_registry
-sam = sam_model_registry["<model_type>"](checkpoint="<path/to/checkpoint>")
+
 predictor = SamPredictor(sam)
 predictor.set_image(<your_image>)
 masks, _, _ = predictor.predict(<input_prompts>)
@@ -54,7 +49,7 @@ or generate masks for an entire image:
 
 ```
 from segment_anything import SamAutomaticMaskGenerator, sam_model_registry
-sam = sam_model_registry["<model_type>"](checkpoint="<path/to/checkpoint>")
+
 mask_generator = SamAutomaticMaskGenerator(sam)
 masks = mask_generator.generate(<your_image>)
 ```
