@@ -16,20 +16,36 @@ Original SAM and MobileSAM have exactly the same prompt-guided mask decoder:
 Mask Decoder                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  3.876M   | 3.876M
-Speed      |  2ms  | 2ms
+Speed      |  4ms  | 4ms
 
 The comparison of the whole pipeline is summarzed as follows: 
-Whole Pipeline                                      | Original SAM | MobileSAM 
+Whole Pipeline (Enc+Dec)                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  615M   | 9.66M
-Speed      |  454ms  | 10ms
+Speed      |  456ms  | 12ms
 
-**Is MobileSAM better than FastSAM? Yes, to our knowledge!** MobileSAM is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
+**Is MobileSAM faster and smaller than FastSAM? Yes, to our knowledge!** 
+MobileSAM is around 7 times smaller and around 5 times faster than the concurrent FastSAM. 
 The comparison of the whole pipeline is summarzed as follows: 
-Whole Pipeline                                      | FastSAM | MobileSAM 
+Whole Pipeline (Enc+Dec)                                      | FastSAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  68M   | 9.66M
-Speed      |  40  |10ms
+Speed      |  64ms  |12ms
+
+**Is MobileSAM better than FastSAM for performance? Yes, to our knowledge!** 
+FastSAM cannot work with a single prompt as the original SAM or our MobileSAM. Therefore, we compare the mIoU with two prompt points (with different pixel distances) and show the resutls as follows. Our MobileSAM is much better than FastSAM under this setup. 
+mIoU                                     | FastSAM | MobileSAM 
+:-----------------------------------------:|:---------|:-----:
+100      |  0.27   | 0.27
+200      |  0.33  |0.71
+300      |  0.37  |0.74
+400      |  0.41  |0.73
+500      |  0.41  |0.73
+
+**Our MobileSAM is as versatile as the original SAM** 
+Unlike FastSAM, our MobileSAM is as versatile as the original SAM, like working with a single prompt point.
+
+We also show the results with box as the prompt as follows. 
 
 **How to Adapt from SAM to MobileSAM?** Since MobileSAM keeps exactly the same pipeline as the original SAM, we inherit pre-processing, post-processing, and all other interfaces from the original SAM. The users who use the original SAM can adapt to MobileSAM with zero effort, by assuing everything is exactly the same except for a smaller image encoder in the SAM.
 
