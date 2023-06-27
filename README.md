@@ -2,14 +2,16 @@
 
 ![SAM design](assets/model_diagram.jpg?raw=true)
 
-**MobileSAM** performs on par with the original SAM and keeps exactly the same pipeline as the original SAM except for a change on the image encoder. Specifically, we replace the original heavyweight ViT-H encoder (632M) with a much smaller Tiny-ViT (5M). On a single GPU, MobileSAM runs around 10ms per image: 8ms on the image encoder and 2ms on the mask decoder. The comparison of encoder between original SAM and MobileSAM is shown as follows: 
+**MobileSAM** performs on par with the original SAM and keeps exactly the same pipeline as the original SAM except for a change on the image encoder. Specifically, we replace the original heavyweight ViT-H encoder (632M) with a much smaller Tiny-ViT (5M). On a single GPU, MobileSAM runs around 10ms per image: 8ms on the image encoder and 2ms on the mask decoder. 
+
+The comparison of ViT-based image encoder is summarzed as follows: 
 
 Image Encoder                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  632M   | 5M
 Speed      |  0.452ms  |0.008ms
 
-Original SAM and MobileSAM is shown as follows: 
+Original SAM and MobileSAM have exactly the same prompt-guided mask decoder: 
 
 Mask Decoder                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
