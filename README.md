@@ -22,7 +22,7 @@ The comparison of the whole pipeline is summarzed as follows:
 Whole Pipeline                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  615M   | 9.66
-Speed      |  0.452ms  |0.01ms
+Speed      |  0.45ms  |0.01ms
 
 **Is MobileSAM better than FastSAM? To our best knowldege, yes!** MobileSAM is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
 
