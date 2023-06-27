@@ -1,5 +1,5 @@
 <p float="left">
-  <img src="assets/icon.jpg?raw=true" width="99.1%" />
+  <img src="assets/icon.jpg?raw=true" width="88.1%" />
 </p>
 
 # Faster Segment Anything (MobileSAM)
