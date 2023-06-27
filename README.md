@@ -8,7 +8,7 @@ The comparison of ViT-based image encoder is summarzed as follows:
 
 Image Encoder                                      | Original SAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
-Paramters      |  632M   | 5M
+Paramters      |  611M   | 5M
 Speed      |  0.452ms  |0.008ms
 
 Original SAM and MobileSAM have exactly the same prompt-guided mask decoder: 
@@ -17,6 +17,12 @@ Mask Decoder                                      | Original SAM | MobileSAM
 :-----------------------------------------:|:---------|:-----:
 Paramters      |  3.876M   | 3.876M
 Speed      |  0.002ms  |0.002ms
+
+The comparison of the whole pipeline is summarzed as follows: 
+Whole Pipeline                                      | Original SAM | MobileSAM 
+:-----------------------------------------:|:---------|:-----:
+Paramters      |  615M   | 9.66
+Speed      |  0.452ms  |0.01ms
 
 **Is MobileSAM better than FastSAM? To our best knowldege, yes!** MobileSAM is 7 times smaller and 4 times faster than the concurrent FastSAM. Performacne-wise, MobileSAM outperforms FastSAM in all aspects.
 
