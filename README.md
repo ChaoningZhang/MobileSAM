@@ -135,7 +135,10 @@ If you use MobileSAM in your research, please use the following BibTeX entry. :m
 
 ## Acknowledgement
 
-1. The code of MobileSAM project is heavily dependent on the original [Segment Anything](https://github.com/facebookresearch/segment-anything) project.
+<details>
+<summary>
+<a href="https://github.com/facebookresearch/segment-anything">SAM</a> (Segment Anything) [<b>bib</b>]
+</summary>
 
 ```bibtex
 @article{kirillov2023segany,
@@ -145,7 +148,9 @@ If you use MobileSAM in your research, please use the following BibTeX entry. :m
   year={2023}
 }
 ```
-2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT).   
+</details>
+
+
 
 <details>
 <summary>
