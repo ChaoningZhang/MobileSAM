@@ -1,3 +1,7 @@
+<p float="left">
+  <img src="assets/icon.jpg?raw=true" width="99.1%" />
+</p>
+
 # Faster Segment Anything (MobileSAM)
 
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
