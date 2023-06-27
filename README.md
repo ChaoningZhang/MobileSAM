@@ -147,12 +147,20 @@ If you use MobileSAM in your research, please use the following BibTeX entry. :m
 ```
 2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT).   
 
+<details>
+<summary>
+<a href="https://github.com/ChaoningZhang/MobileSAM">TinyViT</a> (TinyViT: Fast Pretraining Distillation for Small Vision Transformers) [<b>bib</b>]
+</summary>
+
 ```bibtex
 @InProceedings{tiny_vit,
   title={TinyViT: Fast Pretraining Distillation for Small Vision Transformers},
   author={Wu, Kan and Zhang, Jinnian and Peng, Houwen and Liu, Mengchen and Xiao, Bin and Fu, Jianlong and Yuan, Lu},
   booktitle={European conference on computer vision (ECCV)},
   year={2022}
-}
 ```
+</details>
+
+
+
 
