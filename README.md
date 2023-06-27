@@ -46,13 +46,13 @@ mIoU                                     | FastSAM | MobileSAM
 Unlike FastSAM, our MobileSAM is as versatile as the original SAM, like working with a single prompt point.
 
 <p float="left">
-  <img src="assets/mask_point.jpg?raw=true" width="49.1%" />
+  <img src="assets/mask_point.jpg?raw=true" width="99.1%" />
 </p>
 
 We also show the results with box as the prompt as follows. 
 
 <p float="left">
-  <img src="assets/mask_box.jpg?raw=true" width="49.1%" />
+  <img src="assets/mask_box.jpg?raw=true" width="99.1%" />
 </p>
 
 **How to Adapt from SAM to MobileSAM?** Since MobileSAM keeps exactly the same pipeline as the original SAM, we inherit pre-processing, post-processing, and all other interfaces from the original SAM. The users who use the original SAM can adapt to MobileSAM with zero effort, by assuing everything is exactly the same except for a smaller image encoder in the SAM.
