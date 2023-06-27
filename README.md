@@ -59,7 +59,7 @@ masks = mask_generator.generate(<your_image>)
   <img src="assets/notebook2.png?raw=true" width="48.9%" />
 </p>
 
-## Citing MobileSAM
+## Citing our MobileSAM
 If you use MobileSAM in your research, please use the following BibTeX entry.
 
 @article{zhang2023faster,
@@ -73,18 +73,23 @@ If you use MobileSAM in your research, please use the following BibTeX entry.
 
 1. The code of MobileSAM project is heavily dependent on the original [Segment Anything](https://github.com/facebookresearch/segment-anything) project.
 
+```bibtex
 @article{kirillov2023segany,
   title={Segment Anything}, 
   author={Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and Doll{\'a}r, Piotr and Girshick, Ross},
   journal={arXiv:2304.02643},
   year={2023}
 }
-
+}
+```
 2. We also provide acknowledgement to [TinyViT](https://github.com/microsoft/Cream/tree/main/TinyViT).   
 
+```bibtex
 @InProceedings{tiny_vit,
   title={TinyViT: Fast Pretraining Distillation for Small Vision Transformers},
   author={Wu, Kan and Zhang, Jinnian and Peng, Houwen and Liu, Mengchen and Xiao, Bin and Fu, Jianlong and Yuan, Lu},
   booktitle={European conference on computer vision (ECCV)},
   year={2022}
 }
+```
+
