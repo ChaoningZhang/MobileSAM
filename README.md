@@ -62,12 +62,14 @@ masks = mask_generator.generate(<your_image>)
 ## Citing our MobileSAM
 If you use MobileSAM in your research, please use the following BibTeX entry.
 
+```bibtex
 @article{zhang2023faster,
   title={Faster Segment Anything: Towards Lightweight SAM for Mobile Applications},
   author={Zhang, Chaoning and Han, Dongshen and Qiao, Yu and Kim, Jung Uk and Bae, Sung Ho and Lee, Seungkyu and Hong, Choong Seon},
   journal={arXiv preprint arXiv:2306.14289},
   year={2023}
 }
+```
 
 ## Acknowledgement
 
