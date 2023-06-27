@@ -13,7 +13,6 @@ from typing import Tuple
 from ..modeling import Sam
 from .amg import calculate_stability_score
 
-
 class SamOnnxModel(nn.Module):
     """
     This model should not be called directly, but is used in ONNX export.
@@ -25,14 +24,15 @@ class SamOnnxModel(nn.Module):
     def __init__(
         self,
         model: Sam,
-        use_stability_score: bool = True,
+        return_single_mask: bool,
+        use_stability_score: bool = False,
         return_extra_metrics: bool = False,
     ) -> None:
         super().__init__()
         self.mask_decoder = model.mask_decoder
         self.model = model
         self.img_size = model.image_encoder.img_size
-        self.return_single_mask = True
+        self.return_single_mask = return_single_mask
         self.use_stability_score = use_stability_score
         self.stability_score_offset = 1.0
         self.return_extra_metrics = return_extra_metrics
@@ -106,19 +106,13 @@ class SamOnnxModel(nn.Module):
     @torch.no_grad()
     def forward(
         self,
-        x: torch.Tensor,
-        point_coords: torch.Tensor
+        image_embeddings: torch.Tensor,
+        point_coords: torch.Tensor,
+        point_labels: torch.Tensor,
+        mask_input: torch.Tensor,
+        has_mask_input: torch.Tensor,
+        orig_im_size: torch.Tensor,
     ):
-        img = self.model.preprocess(x)
-        image_embeddings = self.model.image_encoder(img)
-
-        orig_im_size = torch.Tensor([x.shape[-2], x.shape[-1]]).float()
-
-        mask_input_size = [4 * x for x in self.model.prompt_encoder.image_embedding_size]
-        mask_input = torch.zeros(1,1,*mask_input_size, dtype=torch.float)#torch.randn(1,1,*mask_input_size, dtype=torch.float)
-
-        has_mask_input = torch.tensor([0], dtype=torch.float)
-        point_labels = torch.ones(1, point_coords.shape[1], dtype=torch.long)
         sparse_embedding = self._embed_points(point_coords, point_labels)
         dense_embedding = self._embed_masks(mask_input, has_mask_input)
 
@@ -146,4 +140,66 @@ class SamOnnxModel(nn.Module):
             areas = (upscaled_masks > self.model.mask_threshold).sum(-1).sum(-1)
             return upscaled_masks, scores, stability_scores, areas, masks
 
+        return upscaled_masks, scores, masks
+
+
+
+
+
+
+class SimpleSamOnnxModel(SamOnnxModel):
+    """
+    This model should not be called directly, but is used in ONNX export.
+    It combines the prompt encoder, mask decoder, and mask postprocessing of Sam,
+    with some functions modified to enable model tracing. Also supports extra
+    options controlling what information. See the ONNX export script for details.
+    """
+
+    def __init__(
+        self,
+        model: Sam,
+    ) -> None:
+        super().__init__(model=model,
+                         return_single_mask=True,
+                         return_extra_metrics=False,
+                         use_stability_score=True)
+
+    @torch.no_grad()
+    def forward(
+        self,
+        x: torch.Tensor,
+        point_coords: torch.Tensor
+    ):
+        #Generate the image embeddings in the model so it works end-to-end
+        img = self.model.preprocess(x)
+        image_embeddings = self.model.image_encoder(img)
+
+        orig_im_size = torch.Tensor([x.shape[-2], x.shape[-1]]).float()
+        #Remove these from arguments for simplicity
+        mask_input_size = [4 * x for x in self.model.prompt_encoder.image_embedding_size]
+        mask_input = torch.zeros(1,1,*mask_input_size, dtype=torch.float)
+        has_mask_input = torch.tensor([0], dtype=torch.float)
+
+        #Only returning a single mask, just add all labels as 1
+        point_labels = torch.ones(1, point_coords.shape[1], dtype=torch.long)
+        sparse_embedding = self._embed_points(point_coords, point_labels)
+        dense_embedding = self._embed_masks(mask_input, has_mask_input)
+
+        masks, scores = self.model.mask_decoder.predict_masks(
+            image_embeddings=image_embeddings,
+            image_pe=self.model.prompt_encoder.get_dense_pe(),
+            sparse_prompt_embeddings=sparse_embedding,
+            dense_prompt_embeddings=dense_embedding,
+        )
+
+
+        scores = calculate_stability_score(
+            masks, self.model.mask_threshold, self.stability_score_offset
+        )
+
+        masks, scores = self.select_masks(masks, scores, point_coords.shape[1])
+
+        upscaled_masks = self.mask_postprocessing(masks, orig_im_size)
+
+        #apply Sigmoid to the masks
         return torch.sigmoid(upscaled_masks), scores, torch.sigmoid(masks)
