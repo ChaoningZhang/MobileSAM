@@ -125,7 +125,7 @@ class PatchMerging(nn.Module):
         self.act = activation()
         self.conv1 = Conv2d_BN(dim, out_dim, 1, 1, 0)
         stride_c=2
-        if(out_dim==320 or out_dim==448 or out_dim==576):#handongshen  576
+        if(out_dim==320 or out_dim==448 or out_dim==576):
             stride_c=1
         self.conv2 = Conv2d_BN(out_dim, out_dim, 3, stride_c, 1, groups=out_dim)
         self.conv3 = Conv2d_BN(out_dim, out_dim, 1, 1, 0)
@@ -533,7 +533,7 @@ class TinyViT(nn.Module):
         self.set_layer_lr_decay(layer_lr_decay)
         self.neck = nn.Sequential(
             nn.Conv2d(
-                embed_dims[-1],#handongshen
+                embed_dims[-1],
                 256,
                 kernel_size=1,
                 bias=False,
