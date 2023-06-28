@@ -2,18 +2,19 @@
   <img src="assets/logo2.png?raw=true" width="99.1%" />
 </p>
 
+
 # Faster Segment Anything (MobileSAM)
 
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
+
+:grapes: Updates
+* 2023/06/28 Thanks a lot to [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) for combining Grounding-DINO and MobileSAM into [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM)
 
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
 
 <p float="left">
   <img src="assets/mask_comparision.jpg?raw=true" width="99.1%" />
 </p>
-
-:grapes: Updates
-* 2023/06/28 Thanks a lot to [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) for combining Grounding-DINO and MobileSAM into [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM)
 
  
 :star: **MobileSAM** performs on par with the original SAM (at least visually) and keeps exactly the same pipeline as the original SAM except for a change on the image encoder. Specifically, we replace the original heavyweight ViT-H encoder (632M) with a much smaller Tiny-ViT (5M). On a single GPU, MobileSAM runs around 12ms per image: 8ms on the image encoder and 4ms on the mask decoder. 
