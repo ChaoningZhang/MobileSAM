@@ -57,7 +57,7 @@ Speed      |  64ms  |12ms
 FastSAM cannot work with a single prompt as the original SAM or our MobileSAM. Therefore, we compare the mIoU with two prompt points (with different pixel distances) and show the resutls as follows. Our MobileSAM is much better than FastSAM under this setup. 
 mIoU                                     | FastSAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
-100      |  0.27   | 0.27
+100      |  0.27   | 0.73
 200      |  0.33  |0.71
 300      |  0.37  |0.74
 400      |  0.41  |0.73
