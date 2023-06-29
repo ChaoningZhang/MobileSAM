@@ -4,6 +4,7 @@
 
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
+
 :pushpin: A demo of MobileSAM running on CPU is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). 
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Updates)
