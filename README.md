@@ -4,8 +4,9 @@
 
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
+:pushpin: A demo of MobileSAM running on CPU is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). 
 
-:grapes: Meida coverage and Projects that adapt from SAM to MobileSAM (Updates)
+:grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Updates)
 
 * **2023/06/29**: [AnyLabeling](https://github.com/vietanhdev/anylabeling) supports MobileSAM for Image encoder full-finetuing. Thanks for their effort.
 * **2023/06/29**: [SonarSAM](https://github.com/wangsssky/SonarSAM) supports MobileSAM for auto-labeling. Thanks for their effort.
