@@ -2,4 +2,4 @@
 *.pyo
 *.pyd
 __py
-__pycache__/*
+**/__pycache__/
