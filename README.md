@@ -16,10 +16,6 @@
 * **2023/06/27**: MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en), see the link [AK's MobileSAM tweet](https://twitter.com/_akhaliq/status/1673585099097636864). Thanks for their effort.
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
 
-<p float="left">
-  <img src="assets/mask_comparision.jpg?raw=true" width="99.1%" />
-</p>
-
  
 :star: **MobileSAM** performs on par with the original SAM (at least visually) and keeps exactly the same pipeline as the original SAM except for a change on the image encoder. Specifically, we replace the original heavyweight ViT-H encoder (632M) with a much smaller Tiny-ViT (5M). On a single GPU, MobileSAM runs around 12ms per image: 8ms on the image encoder and 4ms on the mask decoder. 
 
