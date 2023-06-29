@@ -2,8 +2,8 @@
   <img src="assets/logo2.png?raw=true" width="99.1%" />
 </p>
 
-
 # Faster Segment Anything (MobileSAM)
+MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en), see the link [MobileSAM tweeted by AK](https://twitter.com/_akhaliq/status/1673585099097636864)  
 
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
 
