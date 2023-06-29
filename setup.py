@@ -7,7 +7,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="segment_anything",
+    name="mobile_sam",
     version="1.0",
     install_requires=[],
     packages=find_packages(exclude="notebooks"),
