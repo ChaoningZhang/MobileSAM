@@ -5,17 +5,15 @@
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
 
-:grapes: Social media that helps promote MobileSAM (Updates)
-* **2023/06/27**: MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en), see the link [AK's MobileSAM tweet](https://twitter.com/_akhaliq/status/1673585099097636864). Thanks for their effort.  
-
-:grapes: Projects that adapt from SAM to MobileSAM (Updates)
+:grapes: Meida coverage and Projects that adapt from SAM to MobileSAM (Updates)
 
 * **2023/06/29**: [AnyLabeling](https://github.com/vietanhdev/anylabeling) supports MobileSAM for auto-labeling. Thanks for their effort.
 
-* **2023/06/29**: [Stable Diffusion WebUI](https://github.com/continue-revolution/sd-webui-segment-anything) supports MobileSAM. Thanks for their effort.
+* **2023/06/29**: [Stable Diffusion WebUIv](https://github.com/continue-revolution/sd-webui-segment-anything) supports MobileSAM. Thanks for their effort.
 
 * **2023/06/28**: [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) supports MobileSAM with [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM). Thanks for their effort.
 
+* **2023/06/27**: MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en), see the link [AK's MobileSAM tweet](https://twitter.com/_akhaliq/status/1673585099097636864). Thanks for their effort.
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
 
 <p float="left">
