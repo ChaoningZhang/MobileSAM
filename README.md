@@ -12,7 +12,7 @@
 
 * **2023/06/29**: [AnyLabeling](https://github.com/vietanhdev/anylabeling) supports MobileSAM for auto-labeling. Thanks for their effort.
 
-* **2023/06/29**: [Stable Diffusion WebUIv](https://github.com/continue-revolution/sd-webui-segment-anything) supports MobileSAM. Thanks for their effort.
+* **2023/06/29**: [Stable Diffusion WebUI](https://github.com/continue-revolution/sd-webui-segment-anything) supports MobileSAM. Thanks for their effort.
 
 * **2023/06/28**: [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) supports MobileSAM with [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM). Thanks for their effort.
 
