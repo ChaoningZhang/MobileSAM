@@ -5,7 +5,7 @@
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
 
-:pushpin: A demo of MobileSAM running on CPU is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. This is not possible for the original SAM.
+:pushpin: A demo of MobileSAM running on **CPU** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine.
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Updates)
 
