@@ -9,7 +9,7 @@
 
 :grapes: Updates
 * **2023/06/28**: Thanks a lot to [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) for combining Grounding-DINO and MobileSAM into [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM)
-* **2023/06/29**: Thanks a lot to [sd-webui-segment-anything](https://github.com/continue-revolution/sd-webui-segment-anything) for integrating MobileSAM into Stable Diffusion WebUI
+* **2023/06/29**: Thanks a lot to [sd-webui-segment-anything](https://github.com/continue-revolution/sd-webui-segment-anything) for integrating MobileSAM into Segment Anything for Stable Diffusion WebUI
   
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
 
