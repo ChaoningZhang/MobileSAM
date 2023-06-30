@@ -13,14 +13,15 @@ license: apache-2.0
 
 # Faster Segment Anything(MobileSAM)
 
-Official PyTorch Implementation of the <a href="https://github.com/ChaoningZhang/MobileSAM">.
+Demo of official PyTorch implementation of the <a href="https://github.com/ChaoningZhang/MobileSAM">.
 
 
 **MobileSAM** performs on par with the original SAM (at least visually) and keeps exactly the same pipeline as the original SAM except for a change on the image encoder.
 Specifically, we replace the original heavyweight ViT-H encoder (632M) with a much smaller Tiny-ViT (5M). On a single GPU, MobileSAM runs around 12ms per image: 8ms on the image encoder and 4ms on the mask decoder. 
 
 ## To run on local PC
-First, mobile_sam must be installed to run on pc. [Instructions](https://github.com/dhkim2810/MobileSAM/tree/master#installation)
+First, mobile_sam must be installed to run on pc. Refer to [Installation Instruction](https://github.com/dhkim2810/MobileSAM/tree/master#installation)
+
 Then run the following
 
 ```
