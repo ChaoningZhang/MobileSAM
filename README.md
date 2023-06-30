@@ -3,7 +3,7 @@
 </p>
 
 # Faster Segment Anything (MobileSAM)
-:pushpin: MobileSAM paper is available at [paper link](https://arxiv.org/pdf/2306.14289.pdf).
+:pushpin: MobileSAM paper is available at [ResearchGate](https://www.researchgate.net/publication/371851844_Faster_Segment_Anything_Towards_Lightweight_SAM_for_Mobile_Applications) and [arXiv](https://arxiv.org/pdf/2306.14289.pdf). The latest version will first appear on [ResearchGate](https://arxiv.org/pdf/2306.14289.pdf), since it takes time for arXiv to update the content.
 
 :pushpin: A **demo of MobileSAM** running on **CPU** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM) (A new version with other features will come soon, stay tuned!). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine.
 
