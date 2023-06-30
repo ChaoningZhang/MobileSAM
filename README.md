@@ -131,7 +131,7 @@ masks = mask_generator.generate(<your_image>)
 ```
 
 ### ONNX Export
-**MobileSAM** is now supports ONNX export. Export the model with
+**MobileSAM** now supports ONNX export. Export the model with
 
 ```
 python scripts/export_onnx_model.py --checkpoint ./weights/mobile_sam.pt --model-type vit_t --output ./mobile_sam.onnx
