@@ -32,21 +32,21 @@
 
     Image Encoder                                      | Original SAM | MobileSAM 
     :-----------------------------------------:|:---------|:-----:
-    Paramters      |  611M   | 5M
+    Parameters      |  611M   | 5M
     Speed      |  452ms  | 8ms
 
 * Original SAM and MobileSAM have exactly the same prompt-guided mask decoder: 
 
     Mask Decoder                                      | Original SAM | MobileSAM 
     :-----------------------------------------:|:---------|:-----:
-    Paramters      |  3.876M   | 3.876M
+    Parameters      |  3.876M   | 3.876M
     Speed      |  4ms  | 4ms
 
 * The comparison of the whole pipeline is summarized as follows:
 
     Whole Pipeline (Enc+Dec)                                      | Original SAM | MobileSAM 
     :-----------------------------------------:|:---------|:-----:
-    Paramters      |  615M   | 9.66M
+    Parameters      |  615M   | 9.66M
     Speed      |  456ms  | 12ms
 
 :star: **Original SAM and MobileSAM with a point as the prompt.**  
@@ -65,7 +65,7 @@ MobileSAM is around 7 times smaller and around 5 times faster than the concurren
 The comparison of the whole pipeline is summarzed as follows: 
 Whole Pipeline (Enc+Dec)                                      | FastSAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
-Paramters      |  68M   | 9.66M
+Parameters      |  68M   | 9.66M
 Speed      |  64ms  |12ms
 
 :muscle: **Does MobileSAM aign better with the original SAM than FastSAM? Yes!** 
