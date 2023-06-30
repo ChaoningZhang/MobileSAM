@@ -554,7 +554,7 @@ class TinyViT(nn.Module):
         # layers -> blocks (depth)
         depth = sum(self.depths)
         lr_scales = [decay_rate ** (depth - i - 1) for i in range(depth)]
-        #print("LR SCALES:", lr_scales)
+        print("LR SCALES:", lr_scales)
 
         def _set_lr_scale(m, scale):
             for p in m.parameters():
