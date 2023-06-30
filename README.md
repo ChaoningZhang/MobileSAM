@@ -46,7 +46,7 @@
     Paramters      |  615M   | 9.66M
     Speed      |  456ms  | 12ms
 
-:star: **Original SAM and MobileSAM with a (single) point as the prompt.**  
+:star: **Original SAM and MobileSAM with a point as the prompt.**  
 
 <p float="left">
   <img src="assets/mask_point.jpg?raw=true" width="99.1%" />
