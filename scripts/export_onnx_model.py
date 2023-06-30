@@ -51,7 +51,7 @@ parser.add_argument(
 parser.add_argument(
     "--opset",
     type=int,
-    default=17,
+    default=16,
     help="The ONNX opset version to use. Must be >=11",
 )
 

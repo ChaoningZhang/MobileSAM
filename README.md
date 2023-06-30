@@ -130,6 +130,16 @@ mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
 
+### ONNX Export
+**MobileSAM** now supports ONNX export. Export the model with
+
+```
+python scripts/export_onnx_model.py --checkpoint ./weights/mobile_sam.pt --model-type vit_t --output ./mobile_sam.onnx
+```
+
+Also check the [example notebook](https://github.com/ChaoningZhang/MobileSAM/blob/master/notebooks/onnx_model_example.ipynb) to follow detailed steps.
+We recommend to use `onnx==1.12.0` and `onnxruntime==1.13.1` which is tested.
+
 
 ## BibTex of our MobileSAM
 If you use MobileSAM in your research, please use the following BibTeX entry. :mega: Thank you!
