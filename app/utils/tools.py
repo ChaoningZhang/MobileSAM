@@ -398,9 +398,9 @@ def point_prompt(masks, points, point_label, target_height, target_width):  # nu
         else:
             mask = annotation
         for i, point in enumerate(points):
-            if mask[point[1], point[0]] == 1 and point_label[i] == 1:
+            if mask[point[0], point[1]] == 1 and point_label[i] == 1:
                 onemask += mask
-            if mask[point[1], point[0]] == 1 and point_label[i] == 0:
+            if mask[point[0], point[1]] == 1 and point_label[i] == 0:
                 onemask -= mask
     onemask = onemask >= 1
     return onemask, 0
