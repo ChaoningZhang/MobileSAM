@@ -7,14 +7,15 @@
 
 :pushpin: A **demo of MobileSAM** running on **CPU** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM) (A new version with other features will come soon, stay tuned!). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine.
 
-:grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Updates)
+:grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Daily update. Thank you all!)
 
+* **2023/06/30**: [SegmentAnythingin3D](https://github.com/Jumpat/SegmentAnythingin3D) supports MobileSAM to segment anything in 3D.
 * **2023/06/30**: MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en) for the second time, see the link [AK's MobileSAM tweet](https://twitter.com/_akhaliq/status/1674410573075718145). Welcome to retweet.
-* **2023/06/29**: [AnyLabeling](https://github.com/vietanhdev/anylabeling) supports MobileSAM for auto-labeling. Thanks for their effort.
-* **2023/06/29**: [SonarSAM](https://github.com/wangsssky/SonarSAM) supports MobileSAM for Image encoder full-finetuing. Thanks for their effort.
-* **2023/06/29**: [Stable Diffusion WebUIv](https://github.com/continue-revolution/sd-webui-segment-anything) supports MobileSAM. Thanks for their effort.
+* **2023/06/29**: [AnyLabeling](https://github.com/vietanhdev/anylabeling) supports MobileSAM for auto-labeling. 
+* **2023/06/29**: [SonarSAM](https://github.com/wangsssky/SonarSAM) supports MobileSAM for Image encoder full-finetuing. 
+* **2023/06/29**: [Stable Diffusion WebUIv](https://github.com/continue-revolution/sd-webui-segment-anything) supports MobileSAM. 
 
-* **2023/06/28**: [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) supports MobileSAM with [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM). Thanks for their effort.
+* **2023/06/28**: [Grounding-SAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) supports MobileSAM with [Grounded-MobileSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/EfficientSAM). 
 
 * **2023/06/27**: MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en), see the link [AK's MobileSAM tweet](https://twitter.com/_akhaliq/status/1673585099097636864). Welcome to retweet.
 ![MobileSAM](assets/model_diagram.jpg?raw=true)
