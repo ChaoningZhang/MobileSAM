@@ -7,7 +7,7 @@
 
 :pushpin: **A demo of MobileSAM** running on **CPU** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. A new version with other features will come soon, stay tuned!
 
-:pushpin: MobileSAM now supports **ONNX** model export. Feel free to test it on your devices and let us know if there are unexpected issues. 
+:pushpin: **MobileSAM supports ONNX model export**. Feel free to test it on your devices and let us know in case of unexpected issues. 
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Daily update. Thank you all!)
 
