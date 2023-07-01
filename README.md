@@ -9,7 +9,7 @@
 
 :pushpin: **A demo of MobileSAM** running on **CPU in the hugging face** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. Stayed tuned for a new version with more features!
 
-:pushpin: **A demo of MobileSAM** running on **CPU in your owwn browser** is open at [demo link](https://mobilesam.glitch.me/). This demo is made by [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser). Note that this is an unofficial version and stayed tuned for an official version with more features!
+:pushpin: **A demo of MobileSAM** running on **CPU in your own browser** is open at [demo link](https://mobilesam.glitch.me/). This demo is made by [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser). Note that this is an unofficial version and stayed tuned for an official version with more features!
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Daily update. Thank you all!)
 
