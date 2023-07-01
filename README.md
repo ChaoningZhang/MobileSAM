@@ -5,12 +5,15 @@
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [ResearchGate](https://www.researchgate.net/publication/371851844_Faster_Segment_Anything_Towards_Lightweight_SAM_for_Mobile_Applications) and [arXiv](https://arxiv.org/pdf/2306.14289.pdf). The latest version will first appear on [ResearchGate](https://arxiv.org/pdf/2306.14289.pdf), since it takes time for arXiv to update the content.
 
-:pushpin: **A demo of MobileSAM** running on **CPU** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. A new version with other features will come soon, stay tuned!
+:pushpin: **MobileSAM supports ONNX model export**. Feel free to test it on your devices and let us know in case of unexpected issues.
 
-:pushpin: **MobileSAM supports ONNX model export**. Feel free to test it on your devices and let us know in case of unexpected issues. 
+:pushpin: **A demo of MobileSAM** running on **CPU in the hugging face** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. Stayed tuned for a new version with more features!
+
+:pushpin: **A demo of MobileSAM** running on **CPU in your owwn browser** is open at [demo link](https://mobilesam.glitch.me/). This demo is made by [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser). Note that this is an unofficial version and stayed tuned for an official version with more features!
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Daily update. Thank you all!)
 
+* **2023/07/01**: [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser) makes an example implementation of MobileSAM in the browser.
 * **2023/06/30**: [SegmentAnythingin3D](https://github.com/Jumpat/SegmentAnythingin3D) supports MobileSAM to segment anything in 3D efficiently.
 * **2023/06/30**: MobileSAM has been featured by [AK](https://twitter.com/_akhaliq?lang=en) for the second time, see the link [AK's MobileSAM tweet](https://twitter.com/_akhaliq/status/1674410573075718145). Welcome to retweet.
 * **2023/06/29**: [AnyLabeling](https://github.com/vietanhdev/anylabeling) supports MobileSAM for auto-labeling. 
