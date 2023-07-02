@@ -13,7 +13,7 @@ license: apache-2.0
 
 # Faster Segment Anything(MobileSAM)
 
-Demo of official PyTorch implementation of the <a href="https://github.com/ChaoningZhang/MobileSAM">.
+Demo of official PyTorch implementation of [MobileSAM](https://github.com/ChaoningZhang/MobileSAM).
 
 
 **MobileSAM** performs on par with the original SAM (at least visually) and keeps exactly the same pipeline as the original SAM except for a change on the image encoder.
