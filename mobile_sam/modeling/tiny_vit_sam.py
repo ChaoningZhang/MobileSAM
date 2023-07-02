@@ -253,7 +253,9 @@ class Attention(torch.nn.Module):
         if mode and hasattr(self, 'ab'):
             del self.ab
         else:
-            self.ab = self.attention_biases[:, self.attention_bias_idxs]
+            self.register_buffer('ab',
+                                 self.attention_biases[:, self.attention_bias_idxs],
+                                 persistent=False)
 
     def forward(self, x):  # x (B,N,C)
         B, N, _ = x.shape
