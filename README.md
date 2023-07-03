@@ -12,6 +12,7 @@
 :pushpin: **A demo of MobileSAM** running on **CPU in your own browser** is open at [demo link](https://mobilesam.glitch.me/). This demo is made by [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser). Note that this is an unofficial version and stayed tuned for an official version with more features!
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Daily update. Thank you all!)
+* **2023/07/03**: [joliGEN](https://github.com/jolibrain/joliGEN) supports MobileSAM for faster and lightweight masks refinement for diffusion inpainting and as GAN discriminator.
 * **2023/07/02**: [Inpaint-Anything](https://github.com/qiaoyu1002/Inpaint-Anything) supports MobileSAM for faster and lightweight Inpaint Anything
 * **2023/07/02**: [Personalize-SAM](https://github.com/qiaoyu1002/Personalize-SAM) supports MobileSAM for faster and lightweight Personalize Segment Anything with 1 Shot
 * **2023/07/01**: [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser) makes an example implementation of MobileSAM in the browser.
