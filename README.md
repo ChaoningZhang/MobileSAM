@@ -106,6 +106,16 @@ git clone git@github.com:ChaoningZhang/MobileSAM.git
 cd MobileSAM; pip install -e .
 ```
 
+## Demo
+
+Once installed MobileSAM, you can run demo on your local PC or check out our [HuggingFace Demo](https://huggingface.co/spaces/dhkim2810/MobileSAM).
+
+It requires latest version of [gradio](https://gradio.app).
+
+```
+cd app
+python app.py
+```
 
 ## <a name="GettingStarted"></a>Getting Started
 The MobileSAM can be loaded in the following ways:
@@ -136,7 +146,7 @@ mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
 
-### ONNX Export
+## ONNX Export
 **MobileSAM** now supports ONNX export. Export the model with
 
 ```
