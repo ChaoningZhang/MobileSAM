@@ -5,7 +5,7 @@
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [ResearchGate](https://www.researchgate.net/publication/371851844_Faster_Segment_Anything_Towards_Lightweight_SAM_for_Mobile_Applications) and [arXiv](https://arxiv.org/pdf/2306.14289.pdf). 
 
-:pushpin: **Support for ONNX model export**. Feel free to test it on your devices and let us know in case of unexpected issues.
+:pushpin: **Support for ONNX model export**. Feel free to test it on your devices and share your results with us.
 
 :pushpin: **A demo of MobileSAM** running on **CPU** is open at [hugging face demo](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. Stayed tuned for a new version with more features! You can also run a demo of MobileSAM on [your local PC](https://github.com/ChaoningZhang/MobileSAM/tree/master/app).
 
