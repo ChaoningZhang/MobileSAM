@@ -10,7 +10,7 @@
 :pushpin: **A demo of MobileSAM** running on **CPU in the hugging face** is open at [demo link](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. Stayed tuned for a new version with more features! You can also run a demo of MobileSAM on your local PC with [one line of code](https://github.com/ChaoningZhang/MobileSAM/tree/master/app).
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Thank you all!)
-
+* **2023/07/03**: [joliGEN](https://github.com/jolibrain/joliGEN) supports MobileSAM for faster and lightweight masks refinement for diffusion inpainting and as GAN discriminator.
 * **2023/07/03**: [MobileSAM-in-the-Browser](https://github.com/akbartus/MobileSAM-in-the-Browser) shows a demo of running MobileSAM on the browser of your local PC or Mobile phone.
 * **2023/07/02**: [Inpaint-Anything](https://github.com/qiaoyu1002/Inpaint-Anything) supports MobileSAM for faster and lightweight Inpaint Anything
 * **2023/07/02**: [Personalize-SAM](https://github.com/qiaoyu1002/Personalize-SAM) supports cMobileSAM for faster and lightweight Personalize Segment Anything with 1 Shot
