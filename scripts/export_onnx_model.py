@@ -112,6 +112,7 @@ def run_export(
         return_single_mask=return_single_mask,
         use_stability_score=use_stability_score,
         return_extra_metrics=return_extra_metrics,
+        orig_img_size=[1500, 2250],
     )
 
     if gelu_approximate:
@@ -133,7 +134,6 @@ def run_export(
         "point_labels": torch.randint(low=0, high=4, size=(1, 5), dtype=torch.float),
         "mask_input": torch.randn(1, 1, *mask_input_size, dtype=torch.float),
         "has_mask_input": torch.tensor([1], dtype=torch.float),
-        "orig_im_size": torch.tensor([1500, 2250], dtype=torch.float),
     }
 
     _ = onnx_model(**dummy_inputs)
