@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import os
 from mobile_sam import sam_model_registry, SamPredictor
 from mobile_sam.utils.onnx import SamOnnxModel
 
@@ -31,10 +32,11 @@ if __name__ == '__main__':
     parser.add_argument("--convert_method", default="pt_mobile", help="convert method. pt_mobile / onnx,ct / onnx,tf")
     parser.add_argument("--model_type", default="vit_t", help="registered model type")
     parser.add_argument("--checkpoint", default="./weights/mobile_sam.pt", help="model file")
-    parser.add_argument('output', help="Output file name.")
+    parser.add_argument('output', help="Output directory.")
     print("Loading model...")
     args = parser.parse_args()
     
+    os.makedirs(args.output, exist_ok=True)
     sam = sam_model_registry[args.model_type](checkpoint=args.checkpoint) # .cuda().eval()
     # sam.to(device=device)
     model = SamOnnxModel(sam, return_single_mask=True) # .cuda().eval() # s.SamForCoreML(sam)
@@ -174,12 +176,13 @@ if __name__ == '__main__':
 
 
     elif "pt_mobile" in convert_method:
+        print("Optimizing for Pytorch Mobile")
         from torch.utils.mobile_optimizer import optimize_for_mobile
         # torch.quantization.fuse_models...
         embedding_model_ts = optimize_for_mobile(embedding_model_ts, backend="metal")
-        print(torch.jit.export_opnames(embedding_model_ts))
-        embedding_model_ts._save_for_lite_interpreter('./vit_image_embedding_mtl.pt')
-        # torch.jit.save(embedding_model_ts, "vit_image_embedding_q.pt")
+        output_file = os.path.join(args.output, "vit_image_embedding_metal.pt")
+        print(f"Saving to {output_file}")
+        embedding_model_ts._save_for_lite_interpreter(output_file)
         
     print("Done")
     # predictor = SamPredictor(sam)
