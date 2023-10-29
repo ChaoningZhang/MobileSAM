@@ -183,11 +183,15 @@ if __name__ == '__main__':
         embedding_model_ts = torch.jit.load(out1)
         print("before optimize", torch.jit.export_opnames(embedding_model_ts))
         # torch.quantization.fuse_models...
-        embedding_model_ts = optimize_for_mobile(embedding_model_ts, backend="metal")
-        print("after optimize", torch.jit.export_opnames(embedding_model_ts))
+        embedding_model_metal_ts = optimize_for_mobile(embedding_model_ts, backend="metal")
+        print("after optimize", torch.jit.export_opnames(embedding_model_metal_ts))
         output_file = os.path.join(args.output, "vit_image_embedding_metal.ptl")
         print(f"Saving to {output_file}")
-        embedding_model_ts._save_for_lite_interpreter(output_file)
+        embedding_model_metal_ts._save_for_lite_interpreter(output_file)
+
+        embedding_model_opt_ts = optimize_for_mobile(embedding_model_ts, backend="cpu")
+        output_file = os.path.join(args.output, "vit_image_embedding_cpu.ptl")
+        embedding_model_opt_ts._save_for_lite_interpreter(output_file)
    
     print("Done")
     # predictor = SamPredictor(sam)
