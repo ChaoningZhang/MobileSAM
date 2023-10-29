@@ -71,6 +71,7 @@ class PatchEmbed(nn.Module):
         )
 
     def forward(self, x):
+        # print("74: ", x.shape)
         return self.seq(x)
 
 
@@ -177,7 +178,7 @@ class ConvLayer(nn.Module):
 
     def forward(self, x):
         for blk in self.blocks:
-            if self.use_checkpoint:
+            if self.use_checkpoint and not torch.jit.is_scripting():
                 x = checkpoint.checkpoint(blk, x)
             else:
                 x = blk(x)
@@ -335,7 +336,7 @@ class TinyViTBlock(nn.Module):
     def forward(self, x):
         H, W = self.input_resolution
         B, L, C = x.shape
-        assert L == H * W, "input feature has wrong size"
+        assert L == H * W, f"input feature has wrong size: {L} != {H} * {W}"
         res_x = x
         if H == self.window_size and W == self.window_size:
             x = self.attn(x)
@@ -435,7 +436,7 @@ class BasicLayer(nn.Module):
 
     def forward(self, x):
         for blk in self.blocks:
-            if self.use_checkpoint:
+            if self.use_checkpoint and not torch.jit.is_scripting():
                 x = checkpoint.checkpoint(blk, x)
             else:
                 x = blk(x)
@@ -513,7 +514,19 @@ class TinyViT(nn.Module):
             if i_layer == 0:
                 layer = ConvLayer(
                     conv_expand_ratio=mbconv_expand_ratio,
-                    **kwargs,
+                    dim=embed_dims[i_layer],
+                    input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
+                                patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
+                        #   input_resolution=(patches_resolution[0] // (2 ** i_layer),
+                        #                     patches_resolution[1] // (2 ** i_layer)),
+                    depth=depths[i_layer],
+                    drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
+                    downsample=PatchMerging if (
+                              i_layer < self.num_layers - 1) else None,
+                    use_checkpoint=use_checkpoint,
+                    out_dim=embed_dims[min(
+                              i_layer + 1, len(embed_dims) - 1)],
+                    activation=activation,
                 )
             else:
                 layer = BasicLayer(
@@ -522,7 +535,20 @@ class TinyViT(nn.Module):
                     mlp_ratio=self.mlp_ratio,
                     drop=drop_rate,
                     local_conv_size=local_conv_size,
-                    **kwargs)
+                    dim=embed_dims[i_layer],
+                    input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
+                                patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
+                        #   input_resolution=(patches_resolution[0] // (2 ** i_layer),
+                        #                     patches_resolution[1] // (2 ** i_layer)),
+                    depth=depths[i_layer],
+                    drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
+                    downsample=PatchMerging if (
+                              i_layer < self.num_layers - 1) else None,
+                    use_checkpoint=use_checkpoint,
+                    out_dim=embed_dims[min(
+                              i_layer + 1, len(embed_dims) - 1)],
+                    activation=activation,
+                )
             self.layers.append(layer)
 
         # Classifier head
@@ -599,14 +625,14 @@ class TinyViT(nn.Module):
 
     def forward_features(self, x):
         # x: (N, C, H, W)
+        # print("602: ", x.shape)
         x = self.patch_embed(x)
 
         x = self.layers[0](x)
         start_i = 1
 
-        for i in range(start_i, len(self.layers)):
-            layer = self.layers[i]
-            x = layer(x)
+        for i, layer in enumerate(self.layers[1:]): #  range(start_i, len(self.layers)):
+            x = layer.forward(x)
         B,_,C=x.size()
         x = x.view(B, 64, 64, C)
         x=x.permute(0, 3, 1, 2)
@@ -614,6 +640,7 @@ class TinyViT(nn.Module):
         return x
 
     def forward(self, x):
+        # print("618: ", x.shape)
         x = self.forward_features(x)
         #x = self.norm_head(x)
         #x = self.head(x)
