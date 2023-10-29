@@ -178,12 +178,17 @@ if __name__ == '__main__':
     elif "pt_mobile" in convert_method:
         print("Optimizing for Pytorch Mobile")
         from torch.utils.mobile_optimizer import optimize_for_mobile
+        out1 = os.path.join(args.output, "vit_image_embedding.pt")
+        torch.jit.save(embedding_model_ts, out1)
+        embedding_model_ts = torch.jit.load(out1)
+        print("before optimize", torch.jit.export_opnames(embedding_model_ts))
         # torch.quantization.fuse_models...
         embedding_model_ts = optimize_for_mobile(embedding_model_ts, backend="metal")
-        output_file = os.path.join(args.output, "vit_image_embedding_metal.pt")
+        print("after optimize", torch.jit.export_opnames(embedding_model_ts))
+        output_file = os.path.join(args.output, "vit_image_embedding_metal.ptl")
         print(f"Saving to {output_file}")
         embedding_model_ts._save_for_lite_interpreter(output_file)
-        
+   
     print("Done")
     # predictor = SamPredictor(sam)
     #print(torch.jit.script(sam))
