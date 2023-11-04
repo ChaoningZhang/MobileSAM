@@ -80,8 +80,11 @@ class MBConv(nn.Module):
                  activation, drop_path):
         super().__init__()
         self.in_chans = in_chans
+        assert self.in_chans > 0
         self.hidden_chans = int(in_chans * expand_ratio)
+        assert self.hidden_chans > 0
         self.out_chans = out_chans
+        assert self.out_chans > 0
 
         self.conv1 = Conv2d_BN(in_chans, self.hidden_chans, ks=1)
         self.act1 = activation()
@@ -337,6 +340,8 @@ class TinyViTBlock(nn.Module):
         H, W = self.input_resolution
         B, L, C = x.shape
         assert L == H * W, f"input feature has wrong size: {L} != {H} * {W}"
+        assert H > 0, "height is 0"
+        assert W > 0, "width is 0"
         res_x = x
         if H == self.window_size and W == self.window_size:
             x = self.attn(x)
@@ -347,18 +352,17 @@ class TinyViTBlock(nn.Module):
             pad_r = (self.window_size - W %
                      self.window_size) % self.window_size
             padding = pad_b > 0 or pad_r > 0
-            #if padding:
-            #     x = F.pad(x, (0, 0, 0, pad_r, 0, pad_b))  # Not possible on pytorch mobile on metal
+            if padding:
+                 x = F.pad(x, (0, 0, 0, pad_r, 0, pad_b))
 
-            # Create an empty tensor for padding the right of the height dimension
-            if pad_r > 0:
-                pad_tensor_r = torch.empty(size=(x.size(0), pad_r, x.size(2), x.size(3)), dtype=x.dtype, device=x.device)
-                x = torch.cat([x, pad_tensor_r], dim=1)  # Concatenate it to the height dimension
-
-            # Create an empty tensor for padding the bottom of the batch dimension
-            if pad_b > 0:
-                pad_tensor_b = torch.empty(size=(pad_b, x.size(1) + pad_r, x.size(2), x.size(3)), dtype=x.dtype, device=x.device)
-                x = torch.cat([x, pad_tensor_b], dim=0)  # Concatenate it to the batch dimension
+                 # Alternative to the above (pytorch lite doesn't come with F.pad on metal):
+                 # if pad_b > 0:
+                 #     pad_tensor_b = torch.empty(size=(B, pad_b, W, C), dtype=x.dtype, device=x.device)
+                 #     x = torch.cat([x, pad_tensor_b], dim=1)  # Concatenate it to the bottom of the height dimension
+                 #
+                 # if pad_r > 0:
+                 #     pad_tensor_r = torch.empty(size=(B, H + pad_b, pad_r, C), dtype=x.dtype, device=x.device)
+                 #     x = torch.cat([x, pad_tensor_r], dim=2)
 
             pH, pW = H + pad_b, W + pad_r
             nH = pH // self.window_size
@@ -634,9 +638,7 @@ class TinyViT(nn.Module):
 
     def forward_features(self, x):
         # x: (N, C, H, W)
-        # print("602: ", x.shape)
         x = self.patch_embed(x)
-
         x = self.layers[0](x)
         start_i = 1
 
@@ -649,7 +651,6 @@ class TinyViT(nn.Module):
         return x
 
     def forward(self, x):
-        # print("618: ", x.shape)
         x = self.forward_features(x)
         #x = self.norm_head(x)
         #x = self.head(x)

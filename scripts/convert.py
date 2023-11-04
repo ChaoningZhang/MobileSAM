@@ -113,11 +113,11 @@ if __name__ == '__main__':
             # embedding_model_metal_ts._save_for_lite_interpreter(model_filename_opt)
             model_cpu = optimize_for_mobile(model, backend="cpu")
             print("after optimize for cpu: ", torch.jit.export_opnames(model_cpu))
-            model_cpu._save_for_lite_interpreter(os.path.join(args.output, f"{model_filename}_cpu.ptl"))
+            model_cpu._save_for_lite_interpreter(os.path.join(args.output, f"cpu_{model_filename}.ptl"))
             model_metal = optimize_for_mobile(model, backend="metal")
             print("after optimize for metal: ", torch.jit.export_opnames(model_metal))
             print(model_metal.code)
-            model_metal._save_for_lite_interpreter(os.path.join(args.output, f"{model_filename}_metal.ptl"))
+            model_metal._save_for_lite_interpreter(os.path.join(args.output, f"metal_{model_filename}.ptl"))
 
 
         save_pt(embedding_model_ts, "vit_image_embedding")
