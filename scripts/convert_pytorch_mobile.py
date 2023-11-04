@@ -1,5 +1,3 @@
-# import sys
-# sys.path.append(".")
 import argparse
 import torch
 import numpy as np

@@ -71,7 +71,6 @@ class PatchEmbed(nn.Module):
         )
 
     def forward(self, x):
-        # print("74: ", x.shape)
         return self.seq(x)
 
 

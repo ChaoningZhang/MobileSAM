@@ -122,7 +122,7 @@ class SamOnnxModel(nn.Module):
         )
 
         if self.use_stability_score:
-            scores =  calculate_stability_score(
+            scores = calculate_stability_score(
                 masks, self.model.mask_threshold, self.stability_score_offset
             )
 
