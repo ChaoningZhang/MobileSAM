@@ -11,7 +11,7 @@ from torch.nn import functional as F
 from typing import Tuple, Union
 
 from ..modeling import Sam
-from .amg import calculate_stability_score # 
+from .amg import calculate_stability_score
 
 class SamOnnxModel(nn.Module):
     """
@@ -111,7 +111,6 @@ class SamOnnxModel(nn.Module):
         orig_im_size: torch.Tensor,
     ) -> Union[Tuple[torch.Tensor, torch.Tensor, torch.Tensor],
                Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]]:
-        # with torch.no_grad(): # Not supported by pytorch mobile
         sparse_embedding = self._embed_points(point_coords, point_labels)
         dense_embedding = self._embed_masks(mask_input, has_mask_input)
 
@@ -121,7 +120,6 @@ class SamOnnxModel(nn.Module):
             sparse_prompt_embeddings=sparse_embedding,
             dense_prompt_embeddings=dense_embedding,
         )
-
 
         if self.use_stability_score:
             scores =  calculate_stability_score(

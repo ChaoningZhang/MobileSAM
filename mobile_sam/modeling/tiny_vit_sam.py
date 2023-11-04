@@ -460,6 +460,7 @@ class BasicLayer(nn.Module):
     def extra_repr(self) -> str:
         return f"dim={self.dim}, input_resolution={self.input_resolution}, depth={self.depth}"
 
+
 class LayerNorm2d(nn.Module):
     def __init__(self, num_channels: int, eps: float = 1e-6) -> None:
         super().__init__()
@@ -473,6 +474,8 @@ class LayerNorm2d(nn.Module):
         x = (x - u) / torch.sqrt(s + self.eps)
         x = self.weight[:, None, None] * x + self.bias[:, None, None]
         return x
+
+
 class TinyViT(nn.Module):
     def __init__(self, img_size=224, in_chans=3, num_classes=1000,
                  embed_dims=[96, 192, 384, 768], depths=[2, 2, 6, 2],
@@ -510,35 +513,17 @@ class TinyViT(nn.Module):
         # build layers
         self.layers = nn.ModuleList()
         for i_layer in range(self.num_layers):
-            kwargs = dict(dim=embed_dims[i_layer],
-                        input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
-                                patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
-                        #   input_resolution=(patches_resolution[0] // (2 ** i_layer),
-                        #                     patches_resolution[1] // (2 ** i_layer)),
-                          depth=depths[i_layer],
-                          drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
-                          downsample=PatchMerging if (
-                              i_layer < self.num_layers - 1) else None,
-                          use_checkpoint=use_checkpoint,
-                          out_dim=embed_dims[min(
-                              i_layer + 1, len(embed_dims) - 1)],
-                          activation=activation,
-                          )
             if i_layer == 0:
                 layer = ConvLayer(
                     conv_expand_ratio=mbconv_expand_ratio,
                     dim=embed_dims[i_layer],
                     input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
-                                patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
-                        #   input_resolution=(patches_resolution[0] // (2 ** i_layer),
-                        #                     patches_resolution[1] // (2 ** i_layer)),
+                                      patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
                     depth=depths[i_layer],
                     drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
-                    downsample=PatchMerging if (
-                              i_layer < self.num_layers - 1) else None,
+                    downsample=PatchMerging if (i_layer < self.num_layers - 1) else None,
                     use_checkpoint=use_checkpoint,
-                    out_dim=embed_dims[min(
-                              i_layer + 1, len(embed_dims) - 1)],
+                    out_dim=embed_dims[min(i_layer + 1, len(embed_dims) - 1)],
                     activation=activation,
                 )
             else:
@@ -550,16 +535,11 @@ class TinyViT(nn.Module):
                     local_conv_size=local_conv_size,
                     dim=embed_dims[i_layer],
                     input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
-                                patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
-                        #   input_resolution=(patches_resolution[0] // (2 ** i_layer),
-                        #                     patches_resolution[1] // (2 ** i_layer)),
+                                      patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
                     depth=depths[i_layer],
                     drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
-                    downsample=PatchMerging if (
-                              i_layer < self.num_layers - 1) else None,
-                    use_checkpoint=use_checkpoint,
-                    out_dim=embed_dims[min(
-                              i_layer + 1, len(embed_dims) - 1)],
+                    downsample=PatchMerging if (i_layer < self.num_layers - 1) else None, use_checkpoint=use_checkpoint,
+                    out_dim=embed_dims[min( i_layer + 1, len(embed_dims) - 1)],
                     activation=activation,
                 )
             self.layers.append(layer)
