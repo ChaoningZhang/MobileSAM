@@ -347,9 +347,18 @@ class TinyViTBlock(nn.Module):
             pad_r = (self.window_size - W %
                      self.window_size) % self.window_size
             padding = pad_b > 0 or pad_r > 0
+            #if padding:
+            #     x = F.pad(x, (0, 0, 0, pad_r, 0, pad_b))  # Not possible on pytorch mobile on metal
 
-            if padding:
-                x = F.pad(x, (0, 0, 0, pad_r, 0, pad_b))
+            # Create an empty tensor for padding the right of the height dimension
+            if pad_r > 0:
+                pad_tensor_r = torch.empty(size=(x.size(0), pad_r, x.size(2), x.size(3)), dtype=x.dtype, device=x.device)
+                x = torch.cat([x, pad_tensor_r], dim=1)  # Concatenate it to the height dimension
+
+            # Create an empty tensor for padding the bottom of the batch dimension
+            if pad_b > 0:
+                pad_tensor_b = torch.empty(size=(pad_b, x.size(1) + pad_r, x.size(2), x.size(3)), dtype=x.dtype, device=x.device)
+                x = torch.cat([x, pad_tensor_b], dim=0)  # Concatenate it to the batch dimension
 
             pH, pW = H + pad_b, W + pad_r
             nH = pH // self.window_size
