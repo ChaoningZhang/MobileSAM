@@ -112,11 +112,10 @@ class Sam(nn.Module):
 
             outputs: List[Dict[str, torch.Tensor]] = []
             for image_record, curr_embedding in zip(batched_input, image_embeddings):
-                # ir: Dict[str, Union[torch.Tensor, Tuple[int, int]]] = image_record
-                boxes = image_record["boxes"] if "boxes" in image_record else None # get("boxes", None)
+                boxes = image_record["boxes"] if "boxes" in image_record else None
                 assert isinstance(boxes, Optional[torch.Tensor])
                 boxes = torch.jit.annotate(Optional[torch.Tensor], boxes)
-                masks = image_record["mask_inputs"] if "mask_inputs" in image_record else None # .get("mask_inputs", None)
+                masks = image_record["mask_inputs"] if "mask_inputs" in image_record else None
                 assert isinstance(masks, Optional[torch.Tensor])
                 if "point_coords" in image_record:
                     pc = image_record["point_coords"]
@@ -160,7 +159,7 @@ class Sam(nn.Module):
     def postprocess_masks(
         self,
         masks: torch.Tensor,
-        input_size: List[int], # Tuple[int, int],
+        input_size: List[int],
         original_size: Tuple[int, int],
     ) -> torch.Tensor:
         """
