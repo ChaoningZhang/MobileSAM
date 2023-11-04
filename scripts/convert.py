@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 from mobile_sam import sam_model_registry, SamPredictor
 from mobile_sam.utils.onnx import SamOnnxModel
-
+from torch import nn
 import onnxruntime
 from onnxruntime.quantization import QuantType
 from onnxruntime.quantization.quantize import quantize_dynamic
@@ -54,6 +54,15 @@ if __name__ == '__main__':
 
     if jit_method == "script":
         print("Script...")
+
+        def replace_gelu_with_tanh(model):
+            for child_name, child_module in model.named_children():
+                if isinstance(child_module, nn.GELU):
+                    print("replacing gelu with tanh")
+                    setattr(model, child_name, nn.Tanh())
+                else:
+                    replace_gelu_with_tanh(child_module)
+        replace_gelu_with_tanh(fn)
         embedding_model_ts = torch.jit.script(
             fn, # .cuda(),
             example_inputs=[ex.unsqueeze(0)], # Why the hell is this unsqueeze necessary?
@@ -103,7 +112,13 @@ if __name__ == '__main__':
             # print(f"Saving to {output_file}")
             # embedding_model_metal_ts._save_for_lite_interpreter(model_filename_opt)
             model_cpu = optimize_for_mobile(model, backend="cpu")
+            print("after optimize for cpu: ", torch.jit.export_opnames(model_cpu))
             model_cpu._save_for_lite_interpreter(os.path.join(args.output, f"{model_filename}_cpu.ptl"))
+            model_metal = optimize_for_mobile(model, backend="metal")
+            print("after optimize for metal: ", torch.jit.export_opnames(model_metal))
+            print(model_metal.code)
+            model_metal._save_for_lite_interpreter(os.path.join(args.output, f"{model_filename}_metal.ptl"))
+
 
         save_pt(embedding_model_ts, "vit_image_embedding")
         save_pt(predictor_model_ts, "mobilesam_predictor")
