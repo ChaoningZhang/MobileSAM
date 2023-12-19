@@ -148,7 +148,7 @@ mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
 ## <a name="GettingStarted"></a>Getting Started (MobileSAMv2)
-Download the model weights from the [checkpoints](https://drive.google.com/file/d/11ib5qV8qFz_2fKn0ryGea0gEevOnM_uc/view?usp=sharing).
+Download the model weights from the [checkpoints](https://drive.google.com/file/d/1dE-YAG-1mFCBmao2rHDp0n-PP4eH7SjE/view?usp=sharing).
 
 After downloading the model weights, faster SegEvery with MobileSAMv2 can be simply used as follows:
 ```
