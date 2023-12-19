@@ -148,7 +148,7 @@ mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
 ## <a name="GettingStarted"></a>Getting Started (MobileSAMv2)
-Firstly, acquire the model from the [checkpoints](https://drive.google.com/file/d/11ib5qV8qFz_2fKn0ryGea0gEevOnM_uc/view?usp=sharing). Alternatively, you can download it from [SAM](https://github.com/facebookresearch/segment-anything), [EfficientViT](https://github.com/mit-han-lab/efficientvit) github homepage, and so on.
+Firstly, acquire the model from the [checkpoints](https://drive.google.com/file/d/11ib5qV8qFz_2fKn0ryGea0gEevOnM_uc/view?usp=sharing).
 
 The MobileSAMv2 can be started with the easy following ways:
 ```
