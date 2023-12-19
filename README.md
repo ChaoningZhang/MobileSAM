@@ -7,9 +7,9 @@
 
 :pushpin: MobileSAMv2 paper is available at [ResearchGate](https://www.researchgate.net/publication/376579294_MobileSAMv2_Faster_Segment_Anything_to_Everything) and [arXiv](https://arxiv.org/abs/2312.09579.pdf). 
 
-:pushpin: **Support for ONNX model export**. Feel free to test it on your devices and share your results with us.
+**Support for ONNX model export**. Feel free to test it on your devices and share your results with us.
 
-:pushpin: **A demo of MobileSAM** running on **CPU** is open at [hugging face demo](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. Stayed tuned for a new version with more features! You can also run a demo of MobileSAM on [your local PC](https://github.com/ChaoningZhang/MobileSAM/tree/master/app).
+**A demo of MobileSAM** running on **CPU** is open at [hugging face demo](https://huggingface.co/spaces/dhkim2810/MobileSAM). On our own Mac i5 CPU, it takes around 3s. On the hugging face demo, the interface and inferior CPUs make it slower but still works fine. Stayed tuned for a new version with more features! You can also run a demo of MobileSAM on [your local PC](https://github.com/ChaoningZhang/MobileSAM/tree/master/app).
 
 :grapes: Media coverage and Projects that adapt from SAM to MobileSAM (Thank you all!)
 * **2023/07/03**: [joliGEN](https://github.com/jolibrain/joliGEN) supports MobileSAM for faster and lightweight mask refinement for image inpainting with Diffusion and GAN.
