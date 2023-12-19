@@ -7,7 +7,7 @@ from ultralytics.yolo.utils.torch_utils import model_info, smart_inference_mode
 from .predict import PromptModelPredictor
 
 
-class PromptModel(YOLO):
+class ObjectAwareModel(YOLO):
     
     @smart_inference_mode()
     def predict(self, source=None, stream=False, **kwargs):
