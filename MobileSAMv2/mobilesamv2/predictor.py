@@ -7,7 +7,7 @@
 import numpy as np
 import torch
 
-from mobilesamv2_segment_anything.modeling import Sam
+from mobilesamv2.modeling import Sam
 
 from typing import Optional, Tuple
 

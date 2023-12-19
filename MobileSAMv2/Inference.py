@@ -5,8 +5,8 @@ from PIL import Image
 import cv2
 import os
 import sys
-from mobilesamv2_segment_anything.promt_mobilesamv2 import PromptModel
-from mobilesamv2_segment_anything import sam_model_registry, SamPredictor
+from mobilesamv2.promt_mobilesamv2 import PromptModel
+from mobilesamv2 import sam_model_registry, SamPredictor
 from typing import Any, Dict, Generator,List
 import matplotlib.pyplot as plt
 import numpy as np
