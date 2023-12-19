@@ -147,7 +147,14 @@ from mobile_sam import SamAutomaticMaskGenerator
 mask_generator = SamAutomaticMaskGenerator(mobile_sam)
 masks = mask_generator.generate(<your_image>)
 ```
+## <a name="GettingStarted"></a>Getting Started (MobileSAMv2)
+Firstly, acquire the model from the [checkpoints](https://drive.google.com/file/d/11ib5qV8qFz_2fKn0ryGea0gEevOnM_uc/view?usp=sharing), or alternatively, you can download it from [SAM](https://github.com/facebookresearch/segment-anything), [EfficientViT](https://github.com/mit-han-lab/efficientvit) github homepage, etc.
 
+The MobileSAMv2 can be started with the easy following ways:
+```
+cd MobileSAMv2
+bash ./experiments/mobilesamv2.sh
+```
 ## ONNX Export
 **MobileSAM** now supports ONNX export. Export the model with
 
