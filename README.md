@@ -4,6 +4,7 @@
 
 # Faster Segment Anything (MobileSAM)
 :pushpin: MobileSAM paper is available at [ResearchGate](https://www.researchgate.net/publication/371851844_Faster_Segment_Anything_Towards_Lightweight_SAM_for_Mobile_Applications) and [arXiv](https://arxiv.org/pdf/2306.14289.pdf). 
+
 :pushpin: MobileSAMv2 paper is available at [ResearchGate](https://www.researchgate.net/publication/376579294_MobileSAMv2_Faster_Segment_Anything_to_Everything) and [arXiv](https://arxiv.org/abs/2312.09579.pdf). 
 
 :pushpin: **Support for ONNX model export**. Feel free to test it on your devices and share your results with us.
