@@ -3,3 +3,5 @@ torchvision
 timm
 opencv-python
 git+https://github.com/dhkim2810/MobileSAM.git
+flask
+flask_cors
