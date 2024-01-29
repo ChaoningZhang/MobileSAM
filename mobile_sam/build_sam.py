@@ -70,8 +70,8 @@ def build_sam_vit_t(checkpoint=None):
             mask_in_chans=16,
             ),
             mask_decoder=MaskDecoder(
-                    num_multimask_outputs=3,
-                    transformer=TwoWayTransformer(
+                num_multimask_outputs=3,
+                transformer=TwoWayTransformer(
                     depth=2,
                     embedding_dim=prompt_embed_dim,
                     mlp_dim=2048,

@@ -10,10 +10,13 @@ from torch.nn import functional as F
 
 from typing import Any, Dict, List, Tuple, Union
 
-from .tiny_vit_sam import TinyViT
-from .image_encoder import ImageEncoderViT
-from .mask_decoder import MaskDecoder
-from .prompt_encoder import PromptEncoder
+from tiny_vit_sam import TinyViT
+from image_encoder import ImageEncoderViT
+from mask_decoder import MaskDecoder
+from transformer import TwoWayTransformer
+from prompt_encoder import PromptEncoder
+
+from huggingface_hub import PyTorchModelHubMixin, hf_hub_download
 
 
 class Sam(nn.Module):
@@ -173,3 +176,78 @@ class Sam(nn.Module):
         padw = self.image_encoder.img_size - w
         x = F.pad(x, (0, padw, 0, padh))
         return x
+
+
+class MobileSAM(Sam, PyTorchModelHubMixin):
+    def __init__(self, config):
+        
+        image_encoder = TinyViT(**config["image_encoder"])
+        prompt_encoder = PromptEncoder(**config["prompt_encoder"])
+        mask_decoder = MaskDecoder(num_multimask_outputs=config["mask_decoder"]["num_multimask_outputs"],
+                                   transformer_dim=config["mask_decoder"]["transformer_dim"],
+                                   iou_head_depth=config["mask_decoder"]["iou_head_depth"],
+                                   iou_head_hidden_dim=config["mask_decoder"]["iou_head_hidden_dim"],
+                                      transformer=TwoWayTransformer(
+                                              depth=config["mask_decoder"]["transformer"]["depth"],
+                                              embedding_dim=config["mask_decoder"]["transformer"]["embedding_dim"],
+                                              mlp_dim=config["mask_decoder"]["transformer"]["mlp_dim"],
+                                              num_heads=8,
+                            ))
+        
+        super().__init__(image_encoder, prompt_encoder, mask_decoder, config["pixel_mean"], config["pixel_std"])
+
+
+prompt_embed_dim = 256
+image_size = 1024
+vit_patch_size = 16
+image_embedding_size = image_size // vit_patch_size   
+
+config = {
+    "image_encoder": dict(img_size=1024,
+                      in_chans=3,
+                      num_classes=1000,
+                      embed_dims=[64, 128, 160, 320],
+                      depths=[2, 2, 6, 2],
+                      num_heads=[2, 4, 5, 10],
+                      window_sizes=[7, 7, 14, 7],
+                      mlp_ratio=4.,
+                      drop_rate=0.,
+                      drop_path_rate=0.0,
+                      use_checkpoint=False,
+                      mbconv_expand_ratio=4.0,
+                      local_conv_size=3,
+                      layer_lr_decay=0.8),
+    "prompt_encoder": dict(
+                      embed_dim=prompt_embed_dim,
+                      image_embedding_size=(image_embedding_size, image_embedding_size),
+                      input_image_size=(image_size, image_size),
+                      mask_in_chans=16),
+    "mask_decoder": dict(
+                      transformer_dim=prompt_embed_dim,
+                      iou_head_depth=3,
+                      iou_head_hidden_dim=256,
+                      num_multimask_outputs=3,
+                      transformer=dict(depth=2,
+                                     embedding_dim=prompt_embed_dim,
+                                      mlp_dim=2048,
+                                      num_heads=8,)
+                      ),
+    "pixel_mean": [123.675, 116.28, 103.53],
+    "pixel_std": [58.395, 57.12, 57.375],
+}
+    
+model = MobileSAM(config)
+
+# load weights
+filepath = hf_hub_download(repo_id="dhkim2810/MobileSAM", filename="mobile_sam.pt", repo_type="space")
+state_dict = torch.load(filepath, map_location="cpu")
+model.load_state_dict(state_dict)
+            
+# save locally
+# model.save_pretrained("tiny-vit-sam-224", config=config)
+
+# push to HF hub
+model.push_to_hub("nielsr/mobilesam", config=config)
+
+# reload
+model = MobileSAM.from_pretrained("nielsr/mobilesam")
