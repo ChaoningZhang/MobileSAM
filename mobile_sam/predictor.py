@@ -30,7 +30,24 @@ class SamPredictor:
         self.model = sam_model
         self.transform = ResizeLongestSide(sam_model.image_encoder.img_size)
         self.reset_image()
-
+       
+    def import_fields(self, fields):
+        self.features = fields["features"]
+        self.orig_h = fields["orig_h"]
+        self.orig_w = fields["orig_w"]
+        self.input_h = fields["input_h"]
+        self.input_w = fields["input_w"]
+        self.is_image_set = True
+        
+    def export_fields(self):
+        return {
+            "features": self.features,
+            "orig_h": self.orig_h,
+            "orig_w": self.orig_w,
+            "input_h": self.input_h,
+            "input_w": self.input_w,
+        }
+    
     def set_image(
         self,
         image: np.ndarray,
