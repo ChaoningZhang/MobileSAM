@@ -1,2 +1,2 @@
-Manager: ChaoningZhang
+Manager: ChaoningZhang, ChoonSeon
 Contributors: Dongshenhan, Qiaoyu1002, dhkim2810, ksugar, killian31, yaimwing
