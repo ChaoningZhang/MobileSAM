@@ -216,4 +216,7 @@ This work was supported by Institute of Information & communications Technology 
 
 
 
+## Members
+Manager: ChaoningZhang
+Contributors: Dongshenhan, Qiaoyu1002, dhkim2810, ksugar, killian31, yaimwing
 
