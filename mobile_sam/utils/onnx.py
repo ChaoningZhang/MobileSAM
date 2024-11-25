@@ -8,11 +8,10 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from typing import Tuple
+from typing import Tuple, Union
 
 from ..modeling import Sam
 from .amg import calculate_stability_score
-
 
 class SamOnnxModel(nn.Module):
     """
@@ -59,10 +58,8 @@ class SamOnnxModel(nn.Module):
             point_labels == -1
         )
 
-        for i in range(self.model.prompt_encoder.num_point_embeddings):
-            point_embedding = point_embedding + self.model.prompt_encoder.point_embeddings[
-                i
-            ].weight * (point_labels == i)
+        for i, embedding in enumerate(self.model.prompt_encoder.point_embeddings):
+            point_embedding = point_embedding + embedding.weight * (point_labels == i)
 
         return point_embedding
 
@@ -85,8 +82,8 @@ class SamOnnxModel(nn.Module):
         masks = masks[..., : prepadded_size[0], : prepadded_size[1]]  # type: ignore
 
         orig_im_size = orig_im_size.to(torch.int64)
-        h, w = orig_im_size[0], orig_im_size[1]
-        masks = F.interpolate(masks, size=(h, w), mode="bilinear", align_corners=False)
+        h, w = int(orig_im_size[0]), int(orig_im_size[1])
+        masks = F.interpolate(masks, size=[h, w], mode="bilinear", align_corners=False)
         return masks
 
     def select_masks(
@@ -104,7 +101,6 @@ class SamOnnxModel(nn.Module):
 
         return masks, iou_preds
 
-    @torch.no_grad()
     def forward(
         self,
         image_embeddings: torch.Tensor,
@@ -113,7 +109,8 @@ class SamOnnxModel(nn.Module):
         mask_input: torch.Tensor,
         has_mask_input: torch.Tensor,
         orig_im_size: torch.Tensor,
-    ):
+    ) -> Union[Tuple[torch.Tensor, torch.Tensor, torch.Tensor],
+               Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]]:
         sparse_embedding = self._embed_points(point_coords, point_labels)
         dense_embedding = self._embed_masks(mask_input, has_mask_input)
 
@@ -135,7 +132,7 @@ class SamOnnxModel(nn.Module):
         upscaled_masks = self.mask_postprocessing(masks, orig_im_size)
 
         if self.return_extra_metrics:
-            stability_scores = calculate_stability_score(
+            stability_scores =  calculate_stability_score(
                 upscaled_masks, self.model.mask_threshold, self.stability_score_offset
             )
             areas = (upscaled_masks > self.model.mask_threshold).sum(-1).sum(-1)

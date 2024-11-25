@@ -79,8 +79,11 @@ class MBConv(nn.Module):
                  activation, drop_path):
         super().__init__()
         self.in_chans = in_chans
+        assert self.in_chans > 0
         self.hidden_chans = int(in_chans * expand_ratio)
+        assert self.hidden_chans > 0
         self.out_chans = out_chans
+        assert self.out_chans > 0
 
         self.conv1 = Conv2d_BN(in_chans, self.hidden_chans, ks=1)
         self.act1 = activation()
@@ -177,7 +180,7 @@ class ConvLayer(nn.Module):
 
     def forward(self, x):
         for blk in self.blocks:
-            if self.use_checkpoint:
+            if self.use_checkpoint and not torch.jit.is_scripting():
                 x = checkpoint.checkpoint(blk, x)
             else:
                 x = blk(x)
@@ -335,7 +338,9 @@ class TinyViTBlock(nn.Module):
     def forward(self, x):
         H, W = self.input_resolution
         B, L, C = x.shape
-        assert L == H * W, "input feature has wrong size"
+        assert L == H * W, f"input feature has wrong size: {L} != {H} * {W}"
+        assert H > 0, "height is 0"
+        assert W > 0, "width is 0"
         res_x = x
         if H == self.window_size and W == self.window_size:
             x = self.attn(x)
@@ -346,9 +351,17 @@ class TinyViTBlock(nn.Module):
             pad_r = (self.window_size - W %
                      self.window_size) % self.window_size
             padding = pad_b > 0 or pad_r > 0
-
             if padding:
-                x = F.pad(x, (0, 0, 0, pad_r, 0, pad_b))
+                 x = F.pad(x, (0, 0, 0, pad_r, 0, pad_b))
+
+                 # Alternative to the above (pytorch lite doesn't come with F.pad on metal):
+                 # if pad_b > 0:
+                 #     pad_tensor_b = torch.empty(size=(B, pad_b, W, C), dtype=x.dtype, device=x.device)
+                 #     x = torch.cat([x, pad_tensor_b], dim=1)  # Concatenate it to the bottom of the height dimension
+                 #
+                 # if pad_r > 0:
+                 #     pad_tensor_r = torch.empty(size=(B, H + pad_b, pad_r, C), dtype=x.dtype, device=x.device)
+                 #     x = torch.cat([x, pad_tensor_r], dim=2)
 
             pH, pW = H + pad_b, W + pad_r
             nH = pH // self.window_size
@@ -435,7 +448,7 @@ class BasicLayer(nn.Module):
 
     def forward(self, x):
         for blk in self.blocks:
-            if self.use_checkpoint:
+            if self.use_checkpoint and not torch.jit.is_scripting():
                 x = checkpoint.checkpoint(blk, x)
             else:
                 x = blk(x)
@@ -445,6 +458,7 @@ class BasicLayer(nn.Module):
 
     def extra_repr(self) -> str:
         return f"dim={self.dim}, input_resolution={self.input_resolution}, depth={self.depth}"
+
 
 class LayerNorm2d(nn.Module):
     def __init__(self, num_channels: int, eps: float = 1e-6) -> None:
@@ -459,6 +473,8 @@ class LayerNorm2d(nn.Module):
         x = (x - u) / torch.sqrt(s + self.eps)
         x = self.weight[:, None, None] * x + self.bias[:, None, None]
         return x
+
+
 class TinyViT(nn.Module):
     def __init__(self, img_size=224, in_chans=3, num_classes=1000,
                  embed_dims=[96, 192, 384, 768], depths=[2, 2, 6, 2],
@@ -496,24 +512,18 @@ class TinyViT(nn.Module):
         # build layers
         self.layers = nn.ModuleList()
         for i_layer in range(self.num_layers):
-            kwargs = dict(dim=embed_dims[i_layer],
-                        input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
-                                patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
-                        #   input_resolution=(patches_resolution[0] // (2 ** i_layer),
-                        #                     patches_resolution[1] // (2 ** i_layer)),
-                          depth=depths[i_layer],
-                          drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
-                          downsample=PatchMerging if (
-                              i_layer < self.num_layers - 1) else None,
-                          use_checkpoint=use_checkpoint,
-                          out_dim=embed_dims[min(
-                              i_layer + 1, len(embed_dims) - 1)],
-                          activation=activation,
-                          )
             if i_layer == 0:
                 layer = ConvLayer(
                     conv_expand_ratio=mbconv_expand_ratio,
-                    **kwargs,
+                    dim=embed_dims[i_layer],
+                    input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
+                                      patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
+                    depth=depths[i_layer],
+                    drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
+                    downsample=PatchMerging if (i_layer < self.num_layers - 1) else None,
+                    use_checkpoint=use_checkpoint,
+                    out_dim=embed_dims[min(i_layer + 1, len(embed_dims) - 1)],
+                    activation=activation,
                 )
             else:
                 layer = BasicLayer(
@@ -522,7 +532,15 @@ class TinyViT(nn.Module):
                     mlp_ratio=self.mlp_ratio,
                     drop=drop_rate,
                     local_conv_size=local_conv_size,
-                    **kwargs)
+                    dim=embed_dims[i_layer],
+                    input_resolution=(patches_resolution[0] // (2 ** (i_layer-1 if i_layer == 3 else i_layer)),
+                                      patches_resolution[1] // (2 ** (i_layer-1 if i_layer == 3 else i_layer))),
+                    depth=depths[i_layer],
+                    drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
+                    downsample=PatchMerging if (i_layer < self.num_layers - 1) else None, use_checkpoint=use_checkpoint,
+                    out_dim=embed_dims[min( i_layer + 1, len(embed_dims) - 1)],
+                    activation=activation,
+                )
             self.layers.append(layer)
 
         # Classifier head
@@ -600,13 +618,11 @@ class TinyViT(nn.Module):
     def forward_features(self, x):
         # x: (N, C, H, W)
         x = self.patch_embed(x)
-
         x = self.layers[0](x)
         start_i = 1
 
-        for i in range(start_i, len(self.layers)):
-            layer = self.layers[i]
-            x = layer(x)
+        for i, layer in enumerate(self.layers[1:]): #  range(start_i, len(self.layers)):
+            x = layer.forward(x)
         B,_,C=x.size()
         x = x.view(B, 64, 64, C)
         x=x.permute(0, 3, 1, 2)
