@@ -1,6 +1,7 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
 import contextlib
+import pickle
 from copy import deepcopy
 from pathlib import Path
 
@@ -516,6 +517,14 @@ def torch_safe_load(weight):
     file = attempt_download_asset(weight)  # search online if missing locally
     try:
         return torch.load(file, map_location='cpu'), file  # load
+    except pickle.UnpicklingError as e:
+        if 'Weights only load failed' not in str(e):
+            raise
+        LOGGER.warning(
+            f"WARNING ⚠️ {weight} uses a checkpoint format that requires full unpickling with PyTorch 2.6+."
+            "\nRetrying with weights_only=False because this project expects trusted local checkpoints."
+        )
+        return torch.load(file, map_location='cpu', weights_only=False), file  # load legacy full checkpoint
     except ModuleNotFoundError as e:  # e.name is missing module name
         if e.name == 'models':
             raise TypeError(
@@ -530,7 +539,16 @@ def torch_safe_load(weight):
                        f"run a command with an official YOLOv8 model, i.e. 'yolo predict model=yolov8n.pt'")
         check_requirements(e.name)  # install missing module
 
-        return torch.load(file, map_location='cpu'), file  # load
+        try:
+            return torch.load(file, map_location='cpu'), file  # load
+        except pickle.UnpicklingError as load_error:
+            if 'Weights only load failed' not in str(load_error):
+                raise
+            LOGGER.warning(
+                f"WARNING ⚠️ {weight} still requires full unpickling after dependency installation."
+                "\nRetrying with weights_only=False because this project expects trusted local checkpoints."
+            )
+            return torch.load(file, map_location='cpu', weights_only=False), file  # load legacy full checkpoint
 
 
 def attempt_load_weights(weights, device=None, inplace=True, fuse=False):
