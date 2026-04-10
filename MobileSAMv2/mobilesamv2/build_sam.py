@@ -115,10 +115,10 @@ def build_sam_vit_t_encoder(checkpoint=None):
         mobile_sam.load_state_dict(state_dict['model'],strict=False)
     return mobile_sam
 
-def build_efficientvit_l2_encoder(checkpoint=None):
+def _build_efficientvit_large_encoder(depth_list, checkpoint=None):
     backbone = EfficientViTLargeBackbone(
                 width_list=[32, 64, 128, 256, 512],
-                depth_list=[1, 2, 2, 8, 8],
+                depth_list=depth_list,
                 in_channels=3,
                 qkv_dim=32,
                 norm="bn2d",
@@ -135,20 +135,30 @@ def build_efficientvit_l2_encoder(checkpoint=None):
     )
     image_encoder = EfficientViTSamImageEncoder(backbone, neck)
     set_norm_eps(image_encoder, 1e-6)
-    checkpoints = torch.load(checkpoint)
-    checkpoint = checkpoints["state_dict"]
-    new_state_dict = {}
-    if checkpoint!=None:
-        for key, value in checkpoint.items():
+    if checkpoint is not None:
+        checkpoints = torch.load(checkpoint, map_location="cpu", weights_only=False)
+        checkpoint_state = checkpoints.get("state_dict", checkpoints)
+        new_state_dict = {}
+        for key, value in checkpoint_state.items():
             index = key.find("image_encoder.")
             if index != -1:
                 new_key = key[index + len("image_encoder."):]
                 new_state_dict[new_key] = value
-            else:
-                continue
-        image_encoder.load_state_dict(new_state_dict,strict=True)  # origin
-        print('checkpoint_load_scucess')
+        image_encoder.load_state_dict(new_state_dict, strict=False)
+        print("checkpoint_load_success")
     return image_encoder
+
+
+def build_efficientvit_l0_encoder(checkpoint=None):
+    return _build_efficientvit_large_encoder([1, 1, 1, 4, 4], checkpoint=checkpoint)
+
+
+def build_efficientvit_l1_encoder(checkpoint=None):
+    return _build_efficientvit_large_encoder([1, 1, 1, 6, 6], checkpoint=checkpoint)
+
+
+def build_efficientvit_l2_encoder(checkpoint=None):
+    return _build_efficientvit_large_encoder([1, 2, 2, 8, 8], checkpoint=checkpoint)
 
 
 def build_sam_vit_h_encoder(checkpoint=None):
@@ -217,6 +227,8 @@ sam_model_registry = {
     "vit_l": build_sam_vit_l,
     "vit_b": build_sam_vit_b,
     "tiny_vit": build_sam_vit_t_encoder,
+    "efficientvit_l0": build_efficientvit_l0_encoder,
+    "efficientvit_l1": build_efficientvit_l1_encoder,
     "efficientvit_l2": build_efficientvit_l2_encoder,
     "PromptGuidedDecoder": build_PromptGuidedDecoder,
     "sam_vit_h": build_sam_vit_h_encoder,
