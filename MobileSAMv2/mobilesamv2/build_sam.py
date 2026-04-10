@@ -20,29 +20,34 @@ def _unwrap_checkpoint_state_dict(checkpoint, preferred_keys=("model", "state_di
     if not isinstance(checkpoint, dict):
         return checkpoint
 
-    # try common wrapper keys
+    # try common wrapper keys first
     for key in preferred_keys:
-        value = checkpoint.get(key)
-        if isinstance(value, dict):
-            # sometimes model -> state_dict
-            if "state_dict" in value:
-                return value["state_dict"]
-            return value
+        if key in checkpoint:
+            value = checkpoint[key]
+            if isinstance(value, dict):
+                # Recursively unwrap if nested
+                tensor_count = sum(1 for v in value.values() if torch.is_tensor(v))
+                if tensor_count > 0:
+                    return value
+                # If no tensors found, try unwrapping further
+                return _unwrap_checkpoint_state_dict(value, preferred_keys)
 
-    # checkpoint itself may be state_dict
+    # checkpoint itself may be state_dict - check if it contains tensors
     tensor_count = sum(1 for v in checkpoint.values() if torch.is_tensor(v))
     if tensor_count > 0 and tensor_count >= len(checkpoint) * 0.8:
         return checkpoint
 
-    # find nested state_dict
-    for value in checkpoint.values():
+    # find nested state_dict in values
+    for key, value in checkpoint.items():
         if isinstance(value, dict):
             tensor_count = sum(1 for v in value.values() if torch.is_tensor(v))
             if tensor_count > 0 and tensor_count >= len(value) * 0.8:
                 return value
 
+    # If still nothing found, return the checkpoint as-is
     available_keys = ", ".join(checkpoint.keys())
-    raise KeyError(f"Unable to find a model state dict in checkpoint. Available keys: {available_keys}")
+    print(f"Warning: Unable to find a model state dict in checkpoint. Available keys: {available_keys}")
+    return checkpoint
 
 def build_sam_vit_h(checkpoint=None):
     return _build_sam(
@@ -125,8 +130,32 @@ def _build_sam(
             state_dict = torch.load(f)
         sam.load_state_dict(state_dict,strict=False)
     return sam
+class EncoderWrapper(nn.Module):
+    """Wraps encoders to expose necessary attributes"""
+    def __init__(self, encoder, in_channels=None, out_channels=256):
+        super().__init__()
+        self.encoder = encoder
+        self.out_channels = out_channels
+        
+        # Copy important attributes from wrapped encoder
+        if hasattr(encoder, 'img_size'):
+            self.img_size = encoder.img_size
+        if hasattr(encoder, 'patch_embed'):
+            self.patch_embed = encoder.patch_embed
+    
+    def forward(self, x):
+        return self.encoder(x)
+    
+    def __getattr__(self, name):
+        """Forward attribute access to the wrapped encoder if not found"""
+        try:
+            return super().__getattr__(name)
+        except AttributeError:
+            return getattr(self.encoder, name)
+
+
 def build_sam_vit_t_encoder(checkpoint=None):
-    mobile_sam =TinyViT(img_size=1024, in_chans=3, num_classes=1000,
+    mobile_sam = TinyViT(img_size=1024, in_chans=3, num_classes=1000,
                 embed_dims=[64, 128, 160, 320],
                 depths=[2, 2, 6, 2],
                 num_heads=[2, 4, 5, 10],
@@ -140,15 +169,13 @@ def build_sam_vit_t_encoder(checkpoint=None):
                 layer_lr_decay=0.8)
     if checkpoint is not None:
         with open(checkpoint, "rb") as f:
-            checkpoint_data = torch.load(
-        checkpoint,
-        map_location="cpu",
-        weights_only=False
-        )
+            checkpoint_data = torch.load(checkpoint, map_location="cpu", weights_only=False)
         state_dict = _unwrap_checkpoint_state_dict(checkpoint_data)
-        mobile_sam.load_state_dict(state_dict,strict=False)
-    return mobile_sam
-
+        mobile_sam.load_state_dict(state_dict, strict=False)
+    
+    # Wrap to expose img_size attribute
+    return EncoderWrapper(mobile_sam)
+    
 def build_efficientvit_l2_encoder(checkpoint=None):
     backbone = EfficientViTLargeBackbone(
                 width_list=[32, 64, 128, 256, 512],

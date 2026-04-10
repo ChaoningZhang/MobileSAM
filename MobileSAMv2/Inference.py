@@ -8,6 +8,8 @@ import sys
 from mobilesamv2.promt_mobilesamv2 import ObjectAwareModel
 from mobilesamv2 import sam_model_registry, SamPredictor
 from typing import Any, Dict, Generator,List
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
@@ -37,19 +39,36 @@ def create_model():
     mobilesamv2.mask_decoder=PromptGuidedDecoder['MaskDecoder']
     return mobilesamv2,ObjAwareModel
     
-def show_anns(anns):
+def show_anns(anns, image):
+    """Blend segmentation masks with the image using NumPy"""
     if len(anns) == 0:
-        return
-    ax = plt.gca()
-    ax.set_autoscale_on(False)
-    img = np.ones((anns.shape[1], anns.shape[2], 4))
-    img[:,:,3] = 0
-    for ann in range(anns.shape[0]):
-        m = anns[ann].bool()
-        m=m.cpu().numpy()
-        color_mask = np.concatenate([np.random.random(3), [0.45]])
-        img[m] = color_mask
-    ax.imshow(img)
+        return image
+    
+    # Convert to numpy if needed
+    if isinstance(image, torch.Tensor):
+        image = image.cpu().numpy()
+    
+    # Start with the original image
+    output = image.copy().astype(np.float32)
+    h, w = output.shape[:2]
+    
+    # Layer masks on top with blending
+    for ann_idx in range(anns.shape[0]):
+        # Get mask and threshold at 0.5
+        if isinstance(anns, torch.Tensor):
+            m = (anns[ann_idx] > 0.5).cpu().numpy()
+        else:
+            m = anns[ann_idx] > 0.5
+        
+        # Only apply if mask has any pixels
+        if m.any():
+            # Generate random color for this mask
+            color = np.random.randint(0, 255, 3)
+            
+            # Blend: 70% image + 30% mask color
+            output[m] = output[m] * 0.7 + color * 0.3
+    
+    return output.astype(np.uint8)
 
 def save_boxes(image, boxes, output_path):
     fig, ax = plt.subplots(figsize=(20, 20))
@@ -138,17 +157,17 @@ def main(args):
                     torch.cuda.empty_cache()
         sam_mask=torch.cat(sam_mask)
         annotation = sam_mask
+        
         areas = torch.sum(annotation, dim=(1, 2))
         sorted_indices = torch.argsort(areas, descending=True)
         show_img = annotation[sorted_indices]
         image_stem, _ = os.path.splitext(image_name)
         save_union_mask_overlay(image, show_img.bool(), os.path.join(output_dir, f"{image_stem}_mask_union.png"))
-        plt.figure(figsize=(20,20))
-        plt.imshow(image)
-        show_anns(show_img)
-        plt.axis('off')
-        plt.savefig(os.path.join(output_dir, f"{image_stem}_mask_overlay.png"), bbox_inches='tight', pad_inches = 0.0)
-        plt.close()
+        
+        # Blend masks with image and save directly
+        blended_image = show_anns(show_img, image)
+        blended_pil = Image.fromarray(blended_image)
+        blended_pil.save(os.path.join(output_dir, f"{image_stem}_mask_overlay.png"))
         del sam_mask, annotation, show_img, predictor.features
         if device == "cuda":
             torch.cuda.empty_cache()
