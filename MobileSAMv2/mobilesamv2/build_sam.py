@@ -20,18 +20,26 @@ def _unwrap_checkpoint_state_dict(checkpoint, preferred_keys=("model", "state_di
     if not isinstance(checkpoint, dict):
         return checkpoint
 
+    # try common wrapper keys
     for key in preferred_keys:
         value = checkpoint.get(key)
         if isinstance(value, dict):
+            # sometimes model -> state_dict
+            if "state_dict" in value:
+                return value["state_dict"]
             return value
 
-    tensor_values = sum(torch.is_tensor(value) for value in checkpoint.values())
-    if tensor_values and tensor_values == len(checkpoint):
+    # checkpoint itself may be state_dict
+    tensor_count = sum(1 for v in checkpoint.values() if torch.is_tensor(v))
+    if tensor_count > 0 and tensor_count >= len(checkpoint) * 0.8:
         return checkpoint
 
+    # find nested state_dict
     for value in checkpoint.values():
-        if isinstance(value, dict) and value and all(torch.is_tensor(v) for v in value.values()):
-            return value
+        if isinstance(value, dict):
+            tensor_count = sum(1 for v in value.values() if torch.is_tensor(v))
+            if tensor_count > 0 and tensor_count >= len(value) * 0.8:
+                return value
 
     available_keys = ", ".join(checkpoint.keys())
     raise KeyError(f"Unable to find a model state dict in checkpoint. Available keys: {available_keys}")
@@ -132,7 +140,11 @@ def build_sam_vit_t_encoder(checkpoint=None):
                 layer_lr_decay=0.8)
     if checkpoint is not None:
         with open(checkpoint, "rb") as f:
-            checkpoint_data = torch.load(f)
+            checkpoint_data = torch.load(
+        checkpoint,
+        map_location="cpu",
+        weights_only=False
+        )
         state_dict = _unwrap_checkpoint_state_dict(checkpoint_data)
         mobile_sam.load_state_dict(state_dict,strict=False)
     return mobile_sam
