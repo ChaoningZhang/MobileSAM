@@ -15,6 +15,27 @@ from efficientvit.models.efficientvit.backbone import EfficientViTLargeBackbone
 from efficientvit.models.efficientvit.sam import SamNeck, EfficientViTSamImageEncoder
 from efficientvit.models.nn.norm import set_norm_eps
 
+
+def _unwrap_checkpoint_state_dict(checkpoint, preferred_keys=("model", "state_dict")):
+    if not isinstance(checkpoint, dict):
+        return checkpoint
+
+    for key in preferred_keys:
+        value = checkpoint.get(key)
+        if isinstance(value, dict):
+            return value
+
+    tensor_values = sum(torch.is_tensor(value) for value in checkpoint.values())
+    if tensor_values and tensor_values == len(checkpoint):
+        return checkpoint
+
+    for value in checkpoint.values():
+        if isinstance(value, dict) and value and all(torch.is_tensor(v) for v in value.values()):
+            return value
+
+    available_keys = ", ".join(checkpoint.keys())
+    raise KeyError(f"Unable to find a model state dict in checkpoint. Available keys: {available_keys}")
+
 def build_sam_vit_h(checkpoint=None):
     return _build_sam(
         encoder_embed_dim=1280,
@@ -111,8 +132,9 @@ def build_sam_vit_t_encoder(checkpoint=None):
                 layer_lr_decay=0.8)
     if checkpoint is not None:
         with open(checkpoint, "rb") as f:
-            state_dict = torch.load(f)
-        mobile_sam.load_state_dict(state_dict['model'],strict=False)
+            checkpoint_data = torch.load(f)
+        state_dict = _unwrap_checkpoint_state_dict(checkpoint_data)
+        mobile_sam.load_state_dict(state_dict,strict=False)
     return mobile_sam
 
 def build_efficientvit_l2_encoder(checkpoint=None):

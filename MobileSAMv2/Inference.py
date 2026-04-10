@@ -10,6 +10,7 @@ from mobilesamv2 import sam_model_registry, SamPredictor
 from typing import Any, Dict, Generator,List
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import Rectangle
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ObjectAwareModel_path", type=str, default='./PromptGuidedDecoder/ObjectAwareModel.pt', help="ObjectAwareModel path")
@@ -21,6 +22,9 @@ def parse_args():
     parser.add_argument("--conf", type=float, default=0.4, help="yolo object confidence threshold")
     parser.add_argument("--retina",type=bool,default=True,help="draw segmentation masks",)
     parser.add_argument("--output_dir", type=str, default="./", help="image save path")
+    parser.add_argument("--decoder_batch_size", type=int, default=64, help="boxes per SAM decoder batch")
+    parser.add_argument("--max_box_area_ratio", type=float, default=0.5, help="drop detections covering too much of the image")
+    parser.add_argument("--min_box_area_ratio", type=float, default=0.0005, help="drop detections that are too small to be useful")
     parser.add_argument("--encoder_type", choices=['tiny_vit','sam_vit_h','mobile_sam','efficientvit_l2','efficientvit_l1','efficientvit_l0'], help="choose the model type")
     return parser.parse_args()
 def create_model():
@@ -43,9 +47,37 @@ def show_anns(anns):
     for ann in range(anns.shape[0]):
         m = anns[ann].bool()
         m=m.cpu().numpy()
-        color_mask = np.concatenate([np.random.random(3), [1]])
+        color_mask = np.concatenate([np.random.random(3), [0.45]])
         img[m] = color_mask
     ax.imshow(img)
+
+def save_boxes(image, boxes, output_path):
+    fig, ax = plt.subplots(figsize=(20, 20))
+    ax.imshow(image)
+    for box in boxes:
+        x0, y0, x1, y1 = box.tolist()
+        ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, fill=False, edgecolor='red', linewidth=2))
+    ax.axis('off')
+    fig.savefig(output_path, bbox_inches='tight', pad_inches=0.0)
+    plt.close(fig)
+
+def save_union_mask_overlay(image, masks, output_path):
+    union_mask = masks.any(dim=0).cpu().numpy()
+    overlay = image.copy()
+    overlay[union_mask] = (0.35 * overlay[union_mask] + 0.65 * np.array([255, 0, 0])).astype(np.uint8)
+    plt.figure(figsize=(20, 20))
+    plt.imshow(overlay)
+    plt.axis('off')
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.0)
+    plt.close()
+
+def filter_boxes(boxes, image_shape, min_area_ratio, max_area_ratio):
+    image_h, image_w = image_shape[:2]
+    image_area = image_h * image_w
+    box_areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    area_ratios = box_areas / image_area
+    keep = (area_ratios >= min_area_ratio) & (area_ratios <= max_area_ratio)
+    return boxes[keep], keep
 
 def batch_iterator(batch_size: int, *args) -> Generator[List[Any], None, None]:
     assert len(args) > 0 and all(
@@ -62,6 +94,7 @@ encoder_path={'efficientvit_l2':'./weight/l2.pt',
 def main(args):
     # import pdb;pdb.set_trace()
     output_dir=args.output_dir  
+    os.makedirs(output_dir, exist_ok=True)
     mobilesamv2, ObjAwareModel=create_model()
     image_encoder=sam_model_registry[args.encoder_type](encoder_path[args.encoder_type])
     mobilesamv2.image_encoder=image_encoder
@@ -72,50 +105,53 @@ def main(args):
     image_files= os.listdir(args.img_path)
     for image_name in image_files:
         print(image_name)
-        image = cv2.imread(args.img_path + image_name)
+        image = cv2.imread(os.path.join(args.img_path, image_name))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         obj_results = ObjAwareModel(image,device=device,retina_masks=args.retina,imgsz=args.imgsz,conf=args.conf,iou=args.iou)
         predictor.set_image(image)
         input_boxes1 = obj_results[0].boxes.xyxy
-        input_boxes = input_boxes1.cpu().numpy()
-        input_boxes = predictor.transform.apply_boxes(input_boxes, predictor.original_size)
-        input_boxes = torch.from_numpy(input_boxes).cuda()
+        if input_boxes1.numel() == 0:
+            print(f"No objects detected in {image_name}, skipping.")
+            continue
+        filtered_boxes, keep = filter_boxes(input_boxes1, image.shape, args.min_box_area_ratio, args.max_box_area_ratio)
+        print(f"Detected {input_boxes1.shape[0]} boxes, kept {filtered_boxes.shape[0]} after area filtering.")
+        if filtered_boxes.numel() == 0:
+            print(f"No boxes remained after filtering for {image_name}, skipping.")
+            continue
+        image_stem, _ = os.path.splitext(image_name)
+        save_boxes(image, filtered_boxes.detach().cpu(), os.path.join(output_dir, f"{image_stem}_boxes.png"))
+        input_boxes = predictor.transform.apply_boxes_torch(filtered_boxes, predictor.original_size).to(device=device)
         sam_mask=[]
-        image_embedding=predictor.features
-        image_embedding=torch.repeat_interleave(image_embedding, 320, dim=0)
-        prompt_embedding=mobilesamv2.prompt_encoder.get_dense_pe()
-        prompt_embedding=torch.repeat_interleave(prompt_embedding, 320, dim=0)
-        for (boxes,) in batch_iterator(320, input_boxes):
+        for (boxes,) in batch_iterator(args.decoder_batch_size, input_boxes):
             with torch.no_grad():
-                image_embedding=image_embedding[0:boxes.shape[0],:,:,:]
-                prompt_embedding=prompt_embedding[0:boxes.shape[0],:,:,:]
-                sparse_embeddings, dense_embeddings = mobilesamv2.prompt_encoder(
-                    points=None,
+                masks, _, _ = predictor.predict_torch(
+                    point_coords=None,
+                    point_labels=None,
                     boxes=boxes,
-                    masks=None,)
-                low_res_masks, _ = mobilesamv2.mask_decoder(
-                    image_embeddings=image_embedding,
-                    image_pe=prompt_embedding,
-                    sparse_prompt_embeddings=sparse_embeddings,
-                    dense_prompt_embeddings=dense_embeddings,
+                    mask_input=None,
                     multimask_output=False,
-                    simple_type=True,
+                    return_logits=False,
                 )
-                low_res_masks=predictor.model.postprocess_masks(low_res_masks, predictor.input_size, predictor.original_size)
-                sam_mask_pre = (low_res_masks > mobilesamv2.mask_threshold)*1.0
-                sam_mask.append(sam_mask_pre.squeeze(1))
+                sam_mask.append(masks.squeeze(1).float())
+                del masks
+                if device == "cuda":
+                    torch.cuda.empty_cache()
         sam_mask=torch.cat(sam_mask)
         annotation = sam_mask
         areas = torch.sum(annotation, dim=(1, 2))
         sorted_indices = torch.argsort(areas, descending=True)
         show_img = annotation[sorted_indices]
+        image_stem, _ = os.path.splitext(image_name)
+        save_union_mask_overlay(image, show_img.bool(), os.path.join(output_dir, f"{image_stem}_mask_union.png"))
         plt.figure(figsize=(20,20))
-        background=np.ones_like(image)*255
-        plt.imshow(background)
+        plt.imshow(image)
         show_anns(show_img)
         plt.axis('off')
-        plt.show() 
-        plt.savefig("{}".format(output_dir+image_name), bbox_inches='tight', pad_inches = 0.0) 
+        plt.savefig(os.path.join(output_dir, f"{image_stem}_mask_overlay.png"), bbox_inches='tight', pad_inches = 0.0)
+        plt.close()
+        del sam_mask, annotation, show_img, predictor.features
+        if device == "cuda":
+            torch.cuda.empty_cache()
 
 if __name__ == "__main__":
     args = parse_args()
