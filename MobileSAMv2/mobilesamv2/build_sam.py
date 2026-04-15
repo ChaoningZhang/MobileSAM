@@ -16,7 +16,11 @@ from efficientvit.models.efficientvit.sam import SamNeck, EfficientViTSamImageEn
 from efficientvit.models.nn.norm import set_norm_eps
 
 
-def _unwrap_checkpoint_state_dict(checkpoint, preferred_keys=("model", "state_dict")):
+def _unwrap_checkpoint_state_dict(
+    checkpoint,
+    preferred_keys=("model", "state_dict"),
+    module_prefix=None,
+):
     if not isinstance(checkpoint, dict):
         return checkpoint
 
@@ -28,25 +32,40 @@ def _unwrap_checkpoint_state_dict(checkpoint, preferred_keys=("model", "state_di
                 # Recursively unwrap if nested
                 tensor_count = sum(1 for v in value.values() if torch.is_tensor(v))
                 if tensor_count > 0:
-                    return value
+                    checkpoint = value
+                    break
                 # If no tensors found, try unwrapping further
-                return _unwrap_checkpoint_state_dict(value, preferred_keys)
+                checkpoint = _unwrap_checkpoint_state_dict(value, preferred_keys)
+                break
+    else:
+        # checkpoint itself may be state_dict - check if it contains tensors
+        tensor_count = sum(1 for v in checkpoint.values() if torch.is_tensor(v))
+        if not (tensor_count > 0 and tensor_count >= len(checkpoint) * 0.8):
+            # find nested state_dict in values
+            for key, value in checkpoint.items():
+                if isinstance(value, dict):
+                    tensor_count = sum(1 for v in value.values() if torch.is_tensor(v))
+                    if tensor_count > 0 and tensor_count >= len(value) * 0.8:
+                        checkpoint = value
+                        break
+            else:
+                # If still nothing found, return the checkpoint as-is
+                available_keys = ", ".join(checkpoint.keys())
+                print(f"Warning: Unable to find a model state dict in checkpoint. Available keys: {available_keys}")
+                return checkpoint
 
-    # checkpoint itself may be state_dict - check if it contains tensors
-    tensor_count = sum(1 for v in checkpoint.values() if torch.is_tensor(v))
-    if tensor_count > 0 and tensor_count >= len(checkpoint) * 0.8:
+    if not module_prefix:
         return checkpoint
 
-    # find nested state_dict in values
+    module_state_dict = {}
+    prefix = f"{module_prefix}."
     for key, value in checkpoint.items():
-        if isinstance(value, dict):
-            tensor_count = sum(1 for v in value.values() if torch.is_tensor(v))
-            if tensor_count > 0 and tensor_count >= len(value) * 0.8:
-                return value
+        if key.startswith(prefix):
+            module_state_dict[key[len(prefix):]] = value
 
-    # If still nothing found, return the checkpoint as-is
-    available_keys = ", ".join(checkpoint.keys())
-    print(f"Warning: Unable to find a model state dict in checkpoint. Available keys: {available_keys}")
+    if module_state_dict:
+        return module_state_dict
+
     return checkpoint
 
 def build_sam_vit_h(checkpoint=None):
@@ -169,8 +188,8 @@ def build_sam_vit_t_encoder(checkpoint=None):
                 layer_lr_decay=0.8)
     if checkpoint is not None:
         with open(checkpoint, "rb") as f:
-            checkpoint_data = torch.load(checkpoint, map_location="cpu", weights_only=False)
-        state_dict = _unwrap_checkpoint_state_dict(checkpoint_data)
+            checkpoint_data = torch.load(f, map_location="cpu", weights_only=False)
+        state_dict = _unwrap_checkpoint_state_dict(checkpoint_data, module_prefix="image_encoder")
         mobile_sam.load_state_dict(state_dict, strict=False)
     
     # Wrap to expose img_size attribute
