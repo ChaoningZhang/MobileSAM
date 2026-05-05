@@ -75,8 +75,8 @@ Whole Pipeline (Enc+Dec)                                      | FastSAM | Mobile
 Parameters      |  68M   | 9.66M
 Speed      |  64ms  |12ms
 
-:muscle: **Does MobileSAM aign better with the original SAM than FastSAM? Yes!** 
-FastSAM is suggested to work with multiple points, thus we compare the mIoU with two prompt points (with different pixel distances) and show the resutls as follows. Higher mIoU indicates higher alignment. 
+:muscle: **Does MobileSAM align better with the original SAM than FastSAM? Yes!** 
+FastSAM is suggested to work with multiple points, thus we compare the mIoU with two prompt points (with different pixel distances) and show the results as follows. Higher mIoU indicates higher alignment. 
 mIoU                                     | FastSAM | MobileSAM 
 :-----------------------------------------:|:---------|:-----:
 100      |  0.27   | 0.73
