@@ -16,9 +16,10 @@ from .mask_decoder import MaskDecoder
 from .prompt_encoder import PromptEncoder
 
 
+MASK_THRESHOLD_DEFAULT: float = 0.0
+IMAGE_FORMAT_DEFAULT: float = "RGB"
+
 class Sam(nn.Module):
-    mask_threshold: float = 0.0
-    image_format: str = "RGB"
 
     def __init__(
         self,
@@ -27,6 +28,8 @@ class Sam(nn.Module):
         mask_decoder: MaskDecoder,
         pixel_mean: List[float] = [123.675, 116.28, 103.53],
         pixel_std: List[float] = [58.395, 57.12, 57.375],
+        mask_threshold=MASK_THRESHOLD_DEFAULT,
+        image_format=IMAGE_FORMAT_DEFAULT
     ) -> None:
         """
         SAM predicts object masks from an image and input prompts.
@@ -46,15 +49,16 @@ class Sam(nn.Module):
         self.mask_decoder = mask_decoder
         self.register_buffer("pixel_mean", torch.Tensor(pixel_mean).view(-1, 1, 1), False)
         self.register_buffer("pixel_std", torch.Tensor(pixel_std).view(-1, 1, 1), False)
+        self.mask_threshold = mask_threshold
+        self.image_format = image_format
 
     @property
     def device(self) -> Any:
         return self.pixel_mean.device
 
-    @torch.no_grad()
     def forward(
         self,
-        batched_input: List[Dict[str, Any]],
+        batched_input: List[Dict[str, Union[torch.Tensor, Tuple[int, int]]]],
         multimask_output: bool,
     ) -> List[Dict[str, torch.Tensor]]:
         """
@@ -95,47 +99,68 @@ class Sam(nn.Module):
                 shape BxCxHxW, where H=W=256. Can be passed as mask input
                 to subsequent iterations of prediction.
         """
-        input_images = torch.stack([self.preprocess(x["image"]) for x in batched_input], dim=0)
-        image_embeddings = self.image_encoder(input_images)
+        with torch.no_grad(): 
+            input_images_list = []
+            for x in batched_input:
+                img = x["image"] # Needed for Torchscript support
+                assert isinstance(img, torch.Tensor)
+                processed_image = self.preprocess(torch.jit.annotate(torch.Tensor, img))
+                input_images_list.append(processed_image)
 
-        outputs = []
-        for image_record, curr_embedding in zip(batched_input, image_embeddings):
-            if "point_coords" in image_record:
-                points = (image_record["point_coords"], image_record["point_labels"])
-            else:
-                points = None
-            sparse_embeddings, dense_embeddings = self.prompt_encoder(
-                points=points,
-                boxes=image_record.get("boxes", None),
-                masks=image_record.get("mask_inputs", None),
-            )
-            low_res_masks, iou_predictions = self.mask_decoder(
-                image_embeddings=curr_embedding.unsqueeze(0),
-                image_pe=self.prompt_encoder.get_dense_pe(),
-                sparse_prompt_embeddings=sparse_embeddings,
-                dense_prompt_embeddings=dense_embeddings,
-                multimask_output=multimask_output,
-            )
-            masks = self.postprocess_masks(
-                low_res_masks,
-                input_size=image_record["image"].shape[-2:],
-                original_size=image_record["original_size"],
-            )
-            masks = masks > self.mask_threshold
-            outputs.append(
-                {
-                    "masks": masks,
-                    "iou_predictions": iou_predictions,
-                    "low_res_logits": low_res_masks,
-                }
-            )
-        return outputs
+            input_images = torch.stack(input_images_list, dim=0)
+            image_embeddings = self.image_encoder(input_images)
+
+            outputs: List[Dict[str, torch.Tensor]] = []
+            for image_record, curr_embedding in zip(batched_input, image_embeddings):
+                boxes = image_record["boxes"] if "boxes" in image_record else None
+                assert isinstance(boxes, Optional[torch.Tensor])
+                boxes = torch.jit.annotate(Optional[torch.Tensor], boxes)
+                masks = image_record["mask_inputs"] if "mask_inputs" in image_record else None
+                assert isinstance(masks, Optional[torch.Tensor])
+                if "point_coords" in image_record:
+                    pc = image_record["point_coords"]
+                    assert isinstance(pc, torch.Tensor)
+                    pl = image_record["point_labels"]
+                    assert isinstance(pl, torch.Tensor)
+                    points = (pc, pl)
+                else:
+                    points = None
+                sparse_embeddings, dense_embeddings = self.prompt_encoder(
+                    points=points,
+                    boxes=boxes,
+                    masks=masks,
+                )
+                low_res_masks, iou_predictions = self.mask_decoder(
+                    image_embeddings=curr_embedding.unsqueeze(0),
+                    image_pe=self.prompt_encoder.get_dense_pe(),
+                    sparse_prompt_embeddings=sparse_embeddings,
+                    dense_prompt_embeddings=dense_embeddings,
+                    multimask_output=multimask_output,
+                )
+                orig_size = image_record["original_size"]
+                assert isinstance(orig_size, Tuple[int, int])
+                img = image_record["image"]
+                assert isinstance(img, torch.Tensor)
+                masks = self.postprocess_masks(
+                    low_res_masks,
+                    input_size=img.shape[-2:],
+                    original_size=orig_size,
+                )
+                masks = masks > self.mask_threshold
+                outputs.append(
+                    {
+                        "masks": masks,
+                        "iou_predictions": iou_predictions,
+                        "low_res_logits": low_res_masks,
+                    }
+                )
+            return outputs
 
     def postprocess_masks(
         self,
         masks: torch.Tensor,
-        input_size: Tuple[int, ...],
-        original_size: Tuple[int, ...],
+        input_size: List[int],
+        original_size: Tuple[int, int],
     ) -> torch.Tensor:
         """
         Remove padding and upscale masks to the original image size.
