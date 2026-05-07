@@ -160,9 +160,12 @@ class TwoWayAttentionBlock(nn.Module):
             queries = queries + attn_out
         queries = self.norm1(queries)
 
+        # Compute once and Reuse while `keys` is unchanged.
+        k = keys + key_pe
+
         # Cross attention block, tokens attending to image embedding
         q = queries + query_pe
-        k = keys + key_pe
+        # k = keys + key_pe   # Re-use the `keys` as above. 
         attn_out = self.cross_attn_token_to_image(q=q, k=k, v=keys)
         queries = queries + attn_out
         queries = self.norm2(queries)
@@ -174,7 +177,7 @@ class TwoWayAttentionBlock(nn.Module):
 
         # Cross attention block, image embedding attending to tokens
         q = queries + query_pe
-        k = keys + key_pe
+        # k = keys + key_pe     # Re-use the `keys` as above. 
         attn_out = self.cross_attn_image_to_token(q=k, k=q, v=queries)
         keys = keys + attn_out
         keys = self.norm4(keys)
